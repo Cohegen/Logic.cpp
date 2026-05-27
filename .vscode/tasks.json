@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CMake: configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "default"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "CMake: build",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "default"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$gcc",
+      "dependsOn": "CMake: configure"
+    },
+    {
+      "label": "Run logic_cpp",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$debugExe = Join-Path '${workspaceFolder}' 'build/Debug/logic_cpp.exe'; $releaseExe = Join-Path '${workspaceFolder}' 'build/Release/logic_cpp.exe'; $singleConfigExe = Join-Path '${workspaceFolder}' 'build/logic_cpp.exe'; if (Test-Path $debugExe) { & $debugExe } elseif (Test-Path $releaseExe) { & $releaseExe } elseif (Test-Path $singleConfigExe) { & $singleConfigExe } else { throw 'logic_cpp executable was not found under build.' }"
+      ],
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "$debugExe = Join-Path '${workspaceFolder}' 'build/Debug/logic_cpp.exe'; $releaseExe = Join-Path '${workspaceFolder}' 'build/Release/logic_cpp.exe'; $singleConfigExe = Join-Path '${workspaceFolder}' 'build/logic_cpp.exe'; if (Test-Path $debugExe) { & $debugExe } elseif (Test-Path $releaseExe) { & $releaseExe } elseif (Test-Path $singleConfigExe) { & $singleConfigExe } else { throw 'logic_cpp executable was not found under build.' }"
+        ]
+      },
+      "linux": {
+        "command": "${workspaceFolder}/build/logic_cpp"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/build/logic_cpp"
+      },
+      "dependsOn": "CMake: build",
+      "problemMatcher": []
+    }
+  ]
+}
