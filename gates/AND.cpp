@@ -6,6 +6,8 @@ both inputs are TRUE
 #include <iostream>
 using namespace std;
 
+
+
 int main()
 {
     int A,B;
