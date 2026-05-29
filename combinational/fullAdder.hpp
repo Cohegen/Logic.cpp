@@ -2,35 +2,49 @@
 #define FULL_ADDER_HPP
 
 #include "Gates.h"
+#include <iostream>
+#include <vector>
 
 class FullAdder
 {
 private:
-    bool A;
-    bool B;
-    bool Cin;
+   //Full adder takes in three inputs
+   std::vector<bool>inputs;
 
 public:
-    FullAdder(bool input1, bool input2, bool input3)
-        : A(input1), B(input2), Cin(input3) {}
+    FullAdder(std::initializer_list<bool>in)
+        : inputs(in) {}
 
     bool Sum() const
     {
-        const Gates firstXor(A, B);
-        const Gates secondXor(firstXor.XOR(), Cin);
-        return secondXor.XOR();
+        if(inputs.size()!=3)
+        {
+            std::cerr<< "FullAdder expects 3 inputs\n";
+            return false;
+        }
+        const Gates SumXor(inputs);
+        return SumXor.XOR();
     }
 
     bool Carry() const
     {
-        const Gates ab(A, B);
-        const Gates bc(B, Cin);
-        const Gates ac(A, Cin);
+        if(inputs.size()!=3){
+            std::cerr << "Full Adder expects 3 inputs\n";
+            return false;
+        }
+        
+        const bool A = inputs[0];
+        const bool B = inputs[1];
+        const bool Cin = inputs[2];
 
-        const Gates firstOr(ab.AND(), bc.AND());
-        const Gates secondOr(firstOr.OR(), ac.AND());
+       const Gates ab(A,B);
+       const Gates bc(B,Cin);
+       const Gates ac(A,Cin);
 
-        return secondOr.OR();
+       const  Gates result(ab.AND(),bc.AND(),ac.AND());
+       return result.OR();
+
+       
     }
 };
 
