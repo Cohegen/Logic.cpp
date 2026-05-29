@@ -2,26 +2,25 @@
 #define HALF_ADDER_HPP
 
 #include "Gates.h"
+#include <vector>
 
 class HalfAdder
 {
 private:
-    bool a;
-    bool b;
+  std::vector<bool>inputs;
 
 public:
-    HalfAdder(bool input1, bool input2)
-        : a(input1), b(input2) {}
+    HalfAdder(std::intializer_list<bool>in):inputs(std::move(in)){}
 
     bool sum() const
     {
-        const Gates gate(a, b);
+        const Gates gate(inputs);
         return gate.XOR();
     }
 
     bool carry() const
     {
-        const Gates gate(a, b);
+        const Gates gate(inputs);
         return gate.AND();
     }
 };
