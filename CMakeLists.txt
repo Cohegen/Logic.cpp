@@ -14,6 +14,7 @@ target_include_directories(logic_gates
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/gates
         ${CMAKE_CURRENT_SOURCE_DIR}/combinational
+        ${CMAKE_CURRENT_SOURCE_DIR}/sequential
 )
 
 add_executable(logic_cpp
