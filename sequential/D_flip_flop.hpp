@@ -1,32 +1,47 @@
 #ifndef D_FLIP_FLOP_HPP
 #define D_FLIP_FLOP_HPP
 
+#include <bitset>
+
 class D_flip_flop
 {
 private:
-    bool D;
-    bool CLK;
+    std::bitset<2> inputs; // bit 0 = D, bit 1 = CLK
     bool previousCLK;
-    bool Q;
-    bool Q_bar;
+    std::bitset<2> state; // bit 0 = Q, bit 1 = Q_bar
 
 public:
     D_flip_flop(bool d = false, bool clk = false)
-        : D(d), CLK(clk), previousCLK(clk), Q(false), Q_bar(true)
+        : previousCLK(clk), state{0b10}
+    {
+        inputs[0] = d;
+        inputs[1] = clk;
+    }
+
+    explicit D_flip_flop(const std::bitset<2>& in)
+        : inputs(in), previousCLK(in[1]), state{0b10}
     {
     }
 
     void setInputs(bool d, bool clk)
     {
-        D = d;
-        CLK = clk;
+        inputs[0] = d;
+        inputs[1] = clk;
+    }
+
+    void setInputs(const std::bitset<2>& in)
+    {
+        inputs = in;
     }
 
     void update()
     {
+        const bool D = inputs[0];
+        const bool CLK = inputs[1];
+
         if (!previousCLK && CLK) {
-            Q = D;
-            Q_bar = !D;
+            state[0] = D;
+            state[1] = !D;
         }
 
         previousCLK = CLK;
@@ -34,22 +49,27 @@ public:
 
     bool getD() const
     {
-        return D;
+        return inputs[0];
     }
 
     bool getCLK() const
     {
-        return CLK;
+        return inputs[1];
     }
 
     bool getQ() const
     {
-        return Q;
+        return state[0];
     }
 
     bool getQ_bar() const
     {
-        return Q_bar;
+        return state[1];
+    }
+
+    std::bitset<2> outputs() const
+    {
+        return state;
     }
 };
 

@@ -1,19 +1,26 @@
 #ifndef SR_LATCH_HPP
 #define SR_LATCH_HPP
 
+#include <bitset>
 #include <iostream>
 
 class SR_Latch
 {
 protected:
-    bool S;
-    bool R;
-    bool Q;
-    bool Q_bar;
+    std::bitset<2> inputs;
+    std::bitset<2> state;
 
 public:
     SR_Latch(bool s = false, bool r = false)
-        : S(s), R(r), Q(false), Q_bar(true)
+        : state{0b10}
+    {
+        inputs[0] = s;
+        inputs[1] = r;
+        update();
+    }
+
+    explicit SR_Latch(const std::bitset<2>& in)
+        : inputs(in), state{0b10}
     {
         update();
     }
@@ -22,39 +29,51 @@ public:
 
     virtual void setInputs(bool s, bool r)
     {
-        S = s;
-        R = r;
+        inputs[0] = s;
+        inputs[1] = r;
+    }
+
+    virtual void setInputs(const std::bitset<2>& in)
+    {
+        inputs = in;
     }
 
     virtual void update()
     {
+        const bool S = inputs[0];
+        const bool R = inputs[1];
+
         if (S && R) {
-            Q = false;
-            Q_bar = false;
+            state.reset();
             std::cerr << "Warning: Invalid SR latch input: S and R are both true\n";
             return;
         }
 
         if (S) {
-            Q = true;
-            Q_bar = false;
+            state[0] = true;
+            state[1] = false;
             return;
         }
 
         if (R) {
-            Q = false;
-            Q_bar = true;
+            state[0] = false;
+            state[1] = true;
         }
     }
 
     bool getQ() const
     {
-        return Q;
+        return state[0];
     }
 
     bool getQ_bar() const
     {
-        return Q_bar;
+        return state[1];
+    }
+
+    std::bitset<2> outputs() const
+    {
+        return state;
     }
 };
 

@@ -2,24 +2,39 @@
 #define HALF_ADDER_HPP
 
 #include "Gates.h"
+#include <bitset>
 
 class HalfAdder
 {
 private:
-    Gates gates;
+    std::bitset<2> inputs;
 
 public:
     HalfAdder(bool a, bool b)
-        : gates{a, b} {}
+    {
+        inputs[0] = a;
+        inputs[1] = b;
+    }
+
+    explicit HalfAdder(const std::bitset<2>& in)
+        : inputs(in) {}
 
     bool sum() const
     {
-        return gates.XOR();
+        return Gates(inputs).XOR();
     }
 
     bool carry() const
     {
-        return gates.AND();
+        return Gates(inputs).AND();
+    }
+
+    std::bitset<2> output() const
+    {
+        std::bitset<2> result;
+        result[0] = sum();
+        result[1] = carry();
+        return result;
     }
 };
 

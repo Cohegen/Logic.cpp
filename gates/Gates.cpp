@@ -5,23 +5,38 @@ for easy use in future modules
 #include "Gates.h"
 
 #include <iostream>
-#include <utility>
 
 Gates::Gates(bool input1, bool input2)
-    : inputs{input1, input2} {}
+    : inputCount(2)
+{
+    inputs[0] = input1;
+    inputs[1] = input2;
+}
 
 Gates::Gates(bool input1)
-    : inputs{input1} {}
+    : inputCount(1)
+{
+    inputs[0] = input1;
+}
 
 Gates::Gates(std::initializer_list<bool> in)
-    : inputs(in) {}
+    : inputCount(in.size())
+{
+    if (inputCount > maxInputs) {
+        std::cerr << "Gate supports up to 64 inputs\n";
+        inputCount = 0;
+        return;
+    }
 
-Gates::Gates(std::vector<bool> in)
-    : inputs(std::move(in)) {}
+    std::size_t index = 0;
+    for (bool bit : in) {
+        inputs[index++] = bit;
+    }
+}
 
 bool Gates::AND() const {
-    for (bool bit : inputs) {
-        if (!bit) {
+    for (std::size_t i = 0; i < inputCount; ++i) {
+        if (!inputs[i]) {
             return false;
         }
     }
@@ -29,8 +44,8 @@ bool Gates::AND() const {
 }
 
 bool Gates::OR() const {
-    for (bool bit : inputs) {
-        if (bit) {
+    for (std::size_t i = 0; i < inputCount; ++i) {
+        if (inputs[i]) {
             return true;
         }
     }
@@ -38,7 +53,7 @@ bool Gates::OR() const {
 }
 
 bool Gates::NOT() const {
-    if (inputs.size() != 1) {
+    if (inputCount != 1) {
         std::cerr << "NOT gate requires exactly one input\n";
         return false;
     }
@@ -46,7 +61,7 @@ bool Gates::NOT() const {
 }
 
 bool Gates::BUFFER() const {
-    if (inputs.size() != 1) {
+    if (inputCount != 1) {
         std::cerr << "Buffer gate requires exactly one input\n";
         return false;
     }
@@ -55,8 +70,8 @@ bool Gates::BUFFER() const {
 
 bool Gates::XOR() const {
     bool result = false;
-    for (bool bit : inputs) {
-        result = result ^ bit;
+    for (std::size_t i = 0; i < inputCount; ++i) {
+        result = result ^ inputs[i];
     }
     return result;
 }
