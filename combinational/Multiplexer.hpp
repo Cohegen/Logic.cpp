@@ -5,40 +5,56 @@ This program implements a 4:1 multiplexer
 #define MULTIPLEXER_HPP
 
 #include "Gates.h"
+#include <bitset>
+#include <cstddef>
 #include <iostream>
 #include <initializer_list>
-#include <vector>
 
 class Multiplexer
 {
 private:
-    std::vector<bool> inputs;
-    bool s0{false};
-    bool s1{false};
+    std::bitset<4> inputs;
+    std::bitset<2> select;
+    bool valid{true};
 
 public:
-    Multiplexer(std::initializer_list<bool> in)
-        : inputs(in)
+    explicit Multiplexer(std::initializer_list<bool> in)
     {
-        if (inputs.size() != 4) {
+        if (in.size() != 4) {
             std::cerr << "Multiplexer expects 4 data inputs\n";
-            inputs.clear();
+            valid = false;
+            return;
+        }
+
+        std::size_t index = 0;
+        for (bool bit : in) {
+            inputs[index++] = bit;
         }
     }
 
+    explicit Multiplexer(const std::bitset<4>& in)
+        : inputs(in) {}
+
     void setSelectLines(bool a, bool b)
     {
-        s0 = a;
-        s1 = b;
+        select[0] = a;
+        select[1] = b;
+    }
+
+    void setSelectLines(const std::bitset<2>& lines)
+    {
+        select = lines;
     }
 
     bool output() const
     {
-        if (inputs.size() != 4) {
+        if (!valid) {
             std::cerr << "Multiplexer expects 4 data inputs\n";
             return false;
         }
 
+        const bool s0 = select[0];
+        const bool s1 = select[1];
         const bool notS0 = Gates{s0}.NOT();
         const bool notS1 = Gates{s1}.NOT();
 

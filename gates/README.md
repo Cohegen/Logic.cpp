@@ -22,7 +22,7 @@ The CMake target `logic_gates` only compiles `Gates.cpp`. The other `.cpp` files
 Gates a{b};              // one input
 Gates ab{a, b};          // two inputs
 Gates many{true, false, true};  // initializer_list
-Gates vec{someVector};   // vector<bool>
+Gates bits{std::bitset<4>{"1010"}};
 ```
 
 ### Operations
