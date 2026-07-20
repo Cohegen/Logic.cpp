@@ -24,5 +24,5 @@ namespace dd
 
         private:
         bool m_value{false};
-    }
-};
+    };
+}
