@@ -4,28 +4,25 @@ From digital design we know that a signal can be either high or low on a wire
 */
 
 #pragma once
-#include "logicstate.hpp"
 
-namespace logic
+namespace dd
 {
     class Signal{
         public:
         Signal() = default;
-        explicit Signal(LogicState state): m_state(state){}
+        explicit Signal(bool value): m_value(value){}
 
-        [[nodiscard]]
-        LogicState value() const
+        bool value() const
         {
-            return m_state;
+            return m_value;
         }
 
-        
-        void set(LogicState state)
+        void set(bool value)
         {
-            m_state = state;
+            m_value = value;
         }
 
         private:
-        LogicState m_state{LogicState::LOW};
+        bool m_value{false};
     };
 }

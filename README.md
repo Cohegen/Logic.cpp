@@ -1,5 +1,5 @@
 # Logic.cpp
-Implementation of concepts in Digital Design using C++ Language.
+Logic.cpp is a C++ library intended to simulate concepts in Digital Design and Computer Architecture.
 
 ## Build
 
@@ -28,3 +28,5 @@ Single-configuration generators place it directly under `build`:
 ```powershell
 .\build\logic_cpp.exe
 ```
+## NOTE : Work is still underway, so this project isn't complete
+

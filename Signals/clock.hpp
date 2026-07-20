@@ -1,8 +1,7 @@
-#pragma once
-
-#include <cstdint>
-
-namespace logic {
+/*
+Defining a clock whose role will be driving
+sequential logic
+*/
 
 class Clock
 {
@@ -14,15 +13,13 @@ class Clock
 
     }
 
-    [[nodiscard]]
-    std::uint64_t cycle() const 
+    std::unint64_t cycle() const 
     {
         return m_cycle;
     }
 
     private:
 
-    std::uint64_t m_cycle{0};
+    std::unit64_t m_cycle{0};
 
 };
-}

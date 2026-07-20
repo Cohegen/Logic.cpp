@@ -1,14 +1,13 @@
 #pragma once 
 
-#include <cstddef>
 #include <vector>
 #include "wire.hpp"
 
-namespace logic {
+namespace dd {
     class Bus
     {
         public:
-            explicit Bus(std::size_t width): m_wires(width){}
+            explicit Bus(std::size_t width): m_wite(width){}
 
             //Returns the size of the bus in terms of number of wires
             std::size_t width() const 
@@ -28,6 +27,6 @@ namespace logic {
 
         private:
 
-        std::vector<Wire> m_wires;
-    };
-}
+        std::vector<Wire> m_wire;
+    }
+};

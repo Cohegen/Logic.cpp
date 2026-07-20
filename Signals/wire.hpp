@@ -1,26 +1,23 @@
 #pragma once 
 #include "signal.hpp"
 
-namespace logic {
+namespace dd {
     class Wire
     {
         public:
 
-        //constructors
-        Wire() = default;
-
-        explicit Wire(LogicState state):m_signal(state){}
-
-        //Writes a logic state onto the wire.
-        void write(LogicState state)
+        /*
+        A method whose role is to change the value of the signal
+        */
+        void write(bool value)
         {
-            m_signal.set(state);
+            m_signal.set(value);
         }
 
-        
-        //Reads the current logic state carried by the wire
-        [[nodiscard]]
-        LogicState read() const{
+        /*
+        Reading the signal value in the wire
+        */
+        bool read() const{
             return m_signal.value();
         }
 
