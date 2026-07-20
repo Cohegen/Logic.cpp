@@ -3,7 +3,7 @@
 #include <vector>
 #include "wire.hpp"
 
-namespace dd {
+namespace logic {
     class Bus
     {
         public:
