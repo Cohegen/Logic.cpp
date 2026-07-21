@@ -1,78 +1,110 @@
+/*
+An implementation of a 4-bit CLA block
+*/
+
 #ifndef CLA4_HPP
 #define CLA4_HPP
 
-#include "Gates.h"
 #include <bitset>
-#include <cstddef>
+
+struct CLA4Result
+{
+    std::bitset<4> sum;
+    bool carry_out;
+};
+
+struct CLA4GroupSignals
+{
+    bool group_generate;
+    bool group_propagate;
+};
 
 class CLA4
 {
 private:
-    std::bitset<4> a;
-    std::bitset<4> b;
-    bool carryIn{false};
+    std::bitset<4> A;
+    std::bitset<4> B;
 
 public:
-    CLA4(const std::bitset<4>& lhs, const std::bitset<4>& rhs, bool cin = false)
-        : a(lhs), b(rhs), carryIn(cin) {}
+    CLA4(const std::bitset<4>& a,
+         const std::bitset<4>& b)
+        : A(a), B(b)
+    {}
 
-    std::bitset<4> sum() const
+    CLA4GroupSignals GroupSignals() const
     {
-        const auto carries = carryBits();
-        std::bitset<4> result;
+        bool G[4];
+        bool P[4];
 
-        for (std::size_t i = 0; i < 4; ++i) {
-            result[i] = Gates{a[i], b[i], carries[i]}.XOR();
+        for(int i = 0; i < 4; ++i)
+        {
+            G[i] = A[i] & B[i];
+            P[i] = A[i] ^ B[i];
         }
 
+        bool GP =
+            P[3] &
+            P[2] &
+            P[1] &
+            P[0];
+
+        bool GG =
+            G[3]
+            |
+            (P[3] & G[2])
+            |
+            (P[3] & P[2] & G[1])
+            |
+            (P[3] & P[2] & P[1] & G[0]);
+
+        return {GG, GP};
+    }
+
+    CLA4Result Result(bool Cin) const
+    {
+        bool G[4];
+        bool P[4];
+
+        for(int i = 0; i < 4; ++i)
+        {
+            G[i] = A[i] & B[i];
+            P[i] = A[i] ^ B[i];
+        }
+
+        bool C0 = Cin;
+
+        bool C1 =
+            G[0] |
+            (P[0] & C0);
+
+        bool C2 =
+            G[1] |
+            (P[1] & G[0]) |
+            (P[1] & P[0] & C0);
+
+        bool C3 =
+            G[2] |
+            (P[2] & G[1]) |
+            (P[2] & P[1] & G[0]) |
+            (P[2] & P[1] & P[0] & C0);
+
+        bool C4 =
+            G[3] |
+            (P[3] & G[2]) |
+            (P[3] & P[2] & G[1]) |
+            (P[3] & P[2] & P[1] & G[0]) |
+            (P[3] & P[2] & P[1] & P[0] & C0);
+
+        CLA4Result result;
+
+        result.sum[0] = P[0] ^ C0;
+        result.sum[1] = P[1] ^ C1;
+        result.sum[2] = P[2] ^ C2;
+        result.sum[3] = P[3] ^ C3;
+
+        result.carry_out = C4;
+
         return result;
-    }
-
-    bool carryOut() const
-    {
-        return carryBits()[4];
-    }
-
-    bool groupPropagate() const
-    {
-        return propagate().all();
-    }
-
-    bool groupGenerate() const
-    {
-        const auto p = propagate();
-        const auto g = generate();
-
-        return g[3]
-            || (p[3] && g[2])
-            || (p[3] && p[2] && g[1])
-            || (p[3] && p[2] && p[1] && g[0]);
-    }
-
-    std::bitset<5> carryBits() const
-    {
-        const auto p = propagate();
-        const auto g = generate();
-
-        std::bitset<5> carry;
-        carry[0] = carryIn;
-        carry[1] = g[0] || (p[0] && carry[0]);
-        carry[2] = g[1] || (p[1] && g[0]) || (p[1] && p[0] && carry[0]);
-        carry[3] = g[2] || (p[2] && g[1]) || (p[2] && p[1] && g[0])
-            || (p[2] && p[1] && p[0] && carry[0]);
-        carry[4] = groupGenerate() || (groupPropagate() && carry[0]);
-        return carry;
-    }
-
-private:
-    std::bitset<4> propagate() const
-    {
-        return a ^ b;
-    }
-
-    std::bitset<4> generate() const
-    {
-        return a & b;
     }
 };
 

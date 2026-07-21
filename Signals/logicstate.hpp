@@ -64,14 +64,11 @@ namespace logic
             case LogicState::LOW:
                 return LogicState::HIGH;
 
-            case LogicState::HIGH:
-                return LogicState::LOW;
-
             case LogicState::UNKNOWN:
                   return LogicState::UNKNOWN;
 
             case LogicState::HIGH_IMPEDANCE:
-                   return LogicState::UNKNOWN;
+                   return LogicState::UNKNOWN
         }
 
         return LogicState::UNKNOWN;
@@ -118,6 +115,38 @@ namespace logic
     
         // Any remaining case involves UNKNOWN or HIGH_IMPEDANCE.
         return LogicState::UNKNOWN;
+    }
+
+    //XOR
+    [[nodiscard]]
+    constexpr LogicState logic_xor(LogicState state1,LogicState state2)
+    {
+        //checking whether both inputs are binary if not output state is unknown
+        if(!is_binary(state1) || !is_binary(state2)){
+            return LogicState::UNKNOWN;
+        }
+        return(state1 != state2) ? LogicState::HIGH:LogicState::LOW;
+    }
+
+    //NAND
+    [[nodiscard]]
+    constexpr LogicState logic_nand(LogicState state1,LogicState state2)
+    {
+        return logic_not(logic_and(state1, state2));
+    }
+
+    //NOR
+    [[nodiscard]]
+    constexpr LogicState logic_nor(LogicState state1,LogicState state2)
+    {
+        return logic_not(logic_or(state1,state2));
+    }
+
+    //XOR
+    [[nodiscard]]
+    constexpr LogicState logic_xnor(LogicState state1,LogicState state2)
+    {
+        return logic_not(logic_xor(state1,state2));
     }
 
     

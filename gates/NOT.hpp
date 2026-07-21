@@ -3,8 +3,10 @@ This program implements the NOT Gate.
 The NOT gate has one input A and one output Y
 */
 
+#pragma once
+#include "Gates.hpp"
 #include "Signals/wire.hpp"
-#include "gates/Gates.hpp"
+
 namespace logic {
     class NotGate:public Gate{
         public:
@@ -17,7 +19,7 @@ namespace logic {
             );
            }
         private:
-        //referencing two wires as our data members
+        // Input and output wires connected to this gate.
         Wire& m_input;
         Wire& m_output;
     };

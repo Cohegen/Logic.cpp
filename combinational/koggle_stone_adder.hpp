@@ -1,66 +1,126 @@
-#ifndef KOGGLE_STONE_ADDER_HPP
-#define KOGGLE_STONE_ADDER_HPP
+#ifndef KOGGE_STONE_ADDER_HPP
+#define KOGGE_STONE_ADDER_HPP
 
 #include <bitset>
+#include <array>
 #include <cstddef>
 
-template <std::size_t N>
-class KoggleStoneAdder
+template<std::size_t N>
+struct PrefixAdderResult
 {
+    std::bitset<N> sum;
+    bool carry_out;
+};
+
+template<std::size_t N>
+class KoggeStoneAdder
+{
+    static_assert(N > 0);
+
 private:
-    std::bitset<N> a;
-    std::bitset<N> b;
-    bool carryIn{false};
+
+    struct GP
+    {
+        bool g;
+        bool p;
+    };
+
+    std::bitset<N> A;
+    std::bitset<N> B;
 
 public:
-    KoggleStoneAdder(const std::bitset<N>& lhs, const std::bitset<N>& rhs, bool cin = false)
-        : a(lhs), b(rhs), carryIn(cin) {}
 
-    std::bitset<N> sum() const
+    KoggeStoneAdder(
+        const std::bitset<N>& a,
+        const std::bitset<N>& b)
+        : A(a), B(b)
     {
-        const auto carries = carryBits();
-        const auto p = a ^ b;
-        std::bitset<N> result;
+    }
 
-        for (std::size_t i = 0; i < N; ++i) {
-            result[i] = p[i] ^ carries[i];
+    PrefixAdderResult<N> Result(bool Cin = false) const
+    {
+        std::array<GP,N> stage;
+
+        //----------------------------------
+        // Initial Generate / Propagate
+        //----------------------------------
+
+        for(std::size_t i=0;i<N;++i)
+        {
+            stage[i].g = A[i] & B[i];
+            stage[i].p = A[i] ^ B[i];
         }
 
-        return result;
-    }
+        //----------------------------------
+        // Kogge-Stone Prefix Tree
+        //----------------------------------
 
-    bool carryOut() const
-    {
-        return carryBits()[N];
-    }
+        for(std::size_t distance=1;
+            distance < N;
+            distance <<= 1)
+        {
+            auto previous = stage;
 
-    std::bitset<N + 1> carryBits() const
-    {
-        std::bitset<N> p = a ^ b;
-        std::bitset<N> g = a & b;
+            for(std::size_t i=distance;
+                i<N;
+                ++i)
+            {
+                stage[i].g =
+                    previous[i].g
+                    |
+                    (
+                        previous[i].p
+                        &
+                        previous[i-distance].g
+                    );
 
-        for (std::size_t distance = 1; distance < N; distance <<= 1) {
-            const auto previousP = p;
-            const auto previousG = g;
-
-            for (std::size_t i = distance; i < N; ++i) {
-                g[i] = previousG[i] || (previousP[i] && previousG[i - distance]);
-                p[i] = previousP[i] && previousP[i - distance];
+                stage[i].p =
+                    previous[i].p
+                    &
+                    previous[i-distance].p;
             }
         }
 
-        std::bitset<N + 1> carry;
-        carry[0] = carryIn;
+        //----------------------------------
+        // Carries
+        //----------------------------------
 
-        for (std::size_t i = 0; i < N; ++i) {
-            carry[i + 1] = g[i] || (p[i] && carryIn);
+        std::array<bool,N+1> carry{};
+
+        carry[0] = Cin;
+
+        for(std::size_t i=0;i<N;++i)
+        {
+            carry[i+1] =
+                stage[i].g
+                |
+                (
+                    stage[i].p
+                    &
+                    Cin
+                );
         }
 
-        return carry;
+        //----------------------------------
+        // Sum
+        //----------------------------------
+
+        PrefixAdderResult<N> result;
+
+        for(std::size_t i=0;i<N;++i)
+        {
+            bool p =
+                A[i] ^ B[i];
+
+            result.sum[i] =
+                p ^ carry[i];
+        }
+
+        result.carry_out =
+            carry[N];
+
+        return result;
     }
 };
-
-template <std::size_t N>
-using KoggeStoneAdder = KoggleStoneAdder<N>;
 
 #endif

@@ -1,48 +1,50 @@
+/*
+An implementation of a Ripple Carry Adder
+*/
 #ifndef RIPPLE_CARRY_ADDER_HPP
 #define RIPPLE_CARRY_ADDER_HPP
 
-#include "fullAdder.hpp"
 #include <bitset>
-#include <cstddef>
-#include <utility>
 
 template <std::size_t N>
-class RippleCarryAdder
+struct AdderResult
+{
+    std::bitset<N> sum;
+    bool carry_out;
+};
+
+template <std::size_t N>
+class RCA
 {
 private:
-    std::bitset<N> a;
-    std::bitset<N> b;
-    bool carryIn{false};
+    std::bitset<N> A;
+    std::bitset<N> B;
 
 public:
-    RippleCarryAdder(const std::bitset<N>& lhs, const std::bitset<N>& rhs, bool cin = false)
-        : a(lhs), b(rhs), carryIn(cin) {}
-
-    std::bitset<N> sum() const
+    RCA(const std::bitset<N>& a, const std::bitset<N>& b)
+        : A(a), B(b)
     {
-        auto result = add();
-        return result.first;
     }
 
-    bool carryOut() const
+    AdderResult<N> Result() const
     {
-        auto result = add();
-        return result.second;
-    }
+        AdderResult<N> result;
 
-private:
-    std::pair<std::bitset<N>, bool> add() const
-    {
-        std::bitset<N> result;
-        bool carry = carryIn;
+        bool carry = false; // Initial carry-in
 
-        for (std::size_t i = 0; i < N; ++i) {
-            const FullAdder adder{a[i], b[i], carry};
-            result[i] = adder.Sum();
-            carry = adder.Carry();
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            // Sum bit
+            result.sum[i] = A[i] ^ B[i] ^ carry;
+
+            // Carry-out of current full adder
+            carry = (A[i] & B[i]) |
+                    (carry & (A[i] ^ B[i]));
         }
 
-        return {result, carry};
+        result.carry_out = carry;
+
+        return result;
     }
 };
 

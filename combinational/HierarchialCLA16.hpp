@@ -1,76 +1,130 @@
-#ifndef HIERARCHIAL_CLA16_HPP
-#define HIERARCHIAL_CLA16_HPP
+#ifndef HIERARCHICAL_CLA16_HPP
+#define HIERARCHICAL_CLA16_HPP
 
 #include "CLA4.hpp"
 #include <bitset>
 
-class HierarchialCLA16
+struct CLA16Result
+{
+    std::bitset<16> sum;
+    bool carry_out;
+};
+
+class CLA16
 {
 private:
-    std::bitset<16> a;
-    std::bitset<16> b;
-    bool carryIn{false};
+    std::bitset<16> A;
+    std::bitset<16> B;
 
 public:
-    HierarchialCLA16(const std::bitset<16>& lhs, const std::bitset<16>& rhs, bool cin = false)
-        : a(lhs), b(rhs), carryIn(cin) {}
+    CLA16(const std::bitset<16>& a,
+          const std::bitset<16>& b)
+        : A(a), B(b)
+    {}
 
-    std::bitset<16> sum() const
+    CLA16Result Result(bool Cin = false) const
     {
-        std::bitset<16> result;
-        auto carries = blockCarries();
+        CLA4 blocks[4] =
+        {
+            CLA4(
+                std::bitset<4>((A.to_ulong() >> 0) & 0xF),
+                std::bitset<4>((B.to_ulong() >> 0) & 0xF)
+            ),
 
-        for (std::size_t block = 0; block < 4; ++block) {
-            const CLA4 cla4(blockBits(a, block), blockBits(b, block), carries[block]);
-            const auto partial = cla4.sum();
+            CLA4(
+                std::bitset<4>((A.to_ulong() >> 4) & 0xF),
+                std::bitset<4>((B.to_ulong() >> 4) & 0xF)
+            ),
 
-            for (std::size_t bit = 0; bit < 4; ++bit) {
-                result[(block * 4) + bit] = partial[bit];
+            CLA4(
+                std::bitset<4>((A.to_ulong() >> 8) & 0xF),
+                std::bitset<4>((B.to_ulong() >> 8) & 0xF)
+            ),
+
+            CLA4(
+                std::bitset<4>((A.to_ulong() >> 12) & 0xF),
+                std::bitset<4>((B.to_ulong() >> 12) & 0xF)
+            )
+        };
+
+        bool GG[4];
+        bool GP[4];
+
+        for(int i = 0; i < 4; ++i)
+        {
+            auto signals =
+                blocks[i].GroupSignals();
+
+            GG[i] =
+                signals.group_generate;
+
+            GP[i] =
+                signals.group_propagate;
+        }
+
+        bool C0 = Cin;
+
+        bool C4 =
+            GG[0]
+            |
+            (GP[0] & C0);
+
+        bool C8 =
+            GG[1]
+            |
+            (GP[1] & GG[0])
+            |
+            (GP[1] & GP[0] & C0);
+
+        bool C12 =
+            GG[2]
+            |
+            (GP[2] & GG[1])
+            |
+            (GP[2] & GP[1] & GG[0])
+            |
+            (GP[2] & GP[1] & GP[0] & C0);
+
+        bool C16 =
+            GG[3]
+            |
+            (GP[3] & GG[2])
+            |
+            (GP[3] & GP[2] & GG[1])
+            |
+            (GP[3] & GP[2] & GP[1] & GG[0])
+            |
+            (GP[3] & GP[2] & GP[1] & GP[0] & C0);
+
+        bool carries[4] =
+        {
+            C0,
+            C4,
+            C8,
+            C12
+        };
+
+        CLA16Result result;
+
+        for(int block = 0; block < 4; ++block)
+        {
+            auto partial =
+                blocks[block].Result(
+                    carries[block]
+                );
+
+            for(int bit = 0; bit < 4; ++bit)
+            {
+                result.sum[block * 4 + bit]
+                    =
+                    partial.sum[bit];
             }
         }
 
-        return result;
-    }
+        result.carry_out = C16;
 
-    bool carryOut() const
-    {
-        return blockCarries()[4];
-    }
-
-    std::bitset<5> blockCarries() const
-    {
-        std::bitset<4> p;
-        std::bitset<4> g;
-
-        for (std::size_t block = 0; block < 4; ++block) {
-            const CLA4 cla4(blockBits(a, block), blockBits(b, block), false);
-            p[block] = cla4.groupPropagate();
-            g[block] = cla4.groupGenerate();
-        }
-
-        std::bitset<5> carry;
-        carry[0] = carryIn;
-        carry[1] = g[0] || (p[0] && carry[0]);
-        carry[2] = g[1] || (p[1] && g[0]) || (p[1] && p[0] && carry[0]);
-        carry[3] = g[2] || (p[2] && g[1]) || (p[2] && p[1] && g[0])
-            || (p[2] && p[1] && p[0] && carry[0]);
-        carry[4] = g[3] || (p[3] && g[2]) || (p[3] && p[2] && g[1])
-            || (p[3] && p[2] && p[1] && g[0])
-            || (p[3] && p[2] && p[1] && p[0] && carry[0]);
-        return carry;
-    }
-
-private:
-    static std::bitset<4> blockBits(const std::bitset<16>& value, std::size_t block)
-    {
-        std::bitset<4> result;
-        for (std::size_t bit = 0; bit < 4; ++bit) {
-            result[bit] = value[(block * 4) + bit];
-        }
         return result;
     }
 };
-
-using HierarchicalCLA16 = HierarchialCLA16;
 
 #endif
