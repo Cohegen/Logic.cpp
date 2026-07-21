@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "signal.hpp"
@@ -34,4 +32,4 @@ private:
     Signal m_signal;
 };
 
-} 
+} // namespace logic
