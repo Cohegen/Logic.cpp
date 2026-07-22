@@ -2,7 +2,7 @@
 
 #include "signal.hpp"
 
-namespace dd
+namespace logic
 {
 
 class Wire
@@ -32,4 +32,4 @@ private:
     Signal m_signal;
 };
 
-} // namespace dd
+} // namespace logic

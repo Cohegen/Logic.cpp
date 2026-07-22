@@ -1,31 +1,26 @@
 #ifndef SUBTRACTOR_HPP
 #define SUBTRACTOR_HPP
 
-#include "ripple_carry_adder.hpp"
 #include <bitset>
-#include <cstddef>
 
 template <std::size_t N>
-class Subtractor
-{
+class Subtractor {
 private:
-    std::bitset<N> a;
-    std::bitset<N> b;
+    std::bitset<N> A;
+    std::bitset<N> B;
 
 public:
-    Subtractor(const std::bitset<N>& minuend, const std::bitset<N>& subtrahend)
-        : a(minuend), b(subtrahend) {}
+    Subtractor(std::bitset<N> a,
+               std::bitset<N> b)
+        : A(a), B(b)
+    {}
 
-    std::bitset<N> difference() const
+    std::bitset<N> Result()
     {
-        const RippleCarryAdder<N> adder(a, ~b, true);
-        return adder.sum();
-    }
+        unsigned long result =
+            A.to_ulong() - B.to_ulong();
 
-    bool borrowOut() const
-    {
-        const RippleCarryAdder<N> adder(a, ~b, true);
-        return !adder.carryOut();
+        return std::bitset<N>(result);
     }
 };
 
