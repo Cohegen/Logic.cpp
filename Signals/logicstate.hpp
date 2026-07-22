@@ -68,7 +68,7 @@ namespace logic
                   return LogicState::UNKNOWN;
 
             case LogicState::HIGH_IMPEDANCE:
-                   return LogicState::UNKNOWN
+                   return LogicState::UNKNOWN;
         }
 
         return LogicState::UNKNOWN;
