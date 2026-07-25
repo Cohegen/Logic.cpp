@@ -32,4 +32,4 @@ private:
     Signal m_signal;
 };
 
-} // namespace logic
+} 
