@@ -1,46 +1,47 @@
-#ifndef  FULL_ADDER_HPP
-#define FULL_ADDER_HPP
+/*
+Implementation of a full adder
+*/
+#pragma once
 
-#include "Gates.h"
-#include <iostream>
-#include <initializer_list>
-#include <vector>
+#include "halfAdder.hpp"
+#include "gates/OR.hpp"
+#include "Signals/wire.hpp"
+
+namespace logic
+{
 
 class FullAdder
 {
-private:
-    std::vector<bool> inputs;
-
 public:
-    FullAdder(std::initializer_list<bool> in)
-        : inputs(in) {}
-
-    bool Sum() const
+    FullAdder() = default;
+    FullAdder(Wire& a,
+              Wire& b,
+              Wire& cin,
+              Wire& sum,
+              Wire& carry)
+        : m_halfAdder1(a, b, m_sum1, m_carry1),
+          m_halfAdder2(m_sum1, cin, sum, m_carry2),
+          m_carryGate(m_carry1, m_carry2, carry)
     {
-        if (inputs.size() != 3) {
-            std::cerr << "FullAdder expects 3 inputs\n";
-            return false;
-        }
-        return Gates(inputs).XOR();
     }
 
-    bool Carry() const
+    void evaluate()
     {
-        if (inputs.size() != 3) {
-            std::cerr << "Full Adder expects 3 inputs\n";
-            return false;
-        }
-
-        const bool A = inputs[0];
-        const bool B = inputs[1];
-        const bool Cin = inputs[2];
-
-        const Gates ab(A, B);
-        const Gates bc(B, Cin);
-        const Gates ac(A, Cin);
-
-        return Gates{ab.AND(), bc.AND(), ac.AND()}.OR();
+        m_halfAdder1.evaluate();
+        m_halfAdder2.evaluate();
+        m_carryGate.evaluate();
     }
+
+private:
+    // Internal wires connecting the subcircuits
+    Wire m_sum1;
+    Wire m_carry1;
+    Wire m_carry2;
+
+    // Internal components
+    HalfAdder m_halfAdder1;
+    HalfAdder m_halfAdder2;
+    OrGate m_carryGate;
 };
 
-#endif
+} // namespace logic

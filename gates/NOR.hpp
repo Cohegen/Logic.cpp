@@ -8,24 +8,22 @@ NOR gate is the inverse of OR gate
 #include "Signals/wire.hpp"
 #include "binary_gate.hpp"
 
-namespace logic
+namespace logic 
 {
-
-class NORGate : public BinaryGate
-{
-public:
-    NORGate(Wire& a, Wire& b, Wire& out)
-        : BinaryGate(a, b, out)
+    class NorGate : public BinaryGate 
     {
-    }
+    public:
+        NorGate(Wire& a, Wire& b, Wire& out)
+            : BinaryGate(a, b, out) {}
 
-    void evaluate() override
-    {
-        m_output.write(
-            logic_nor(
-                m_inputA.read(),
-                m_inputB.read()));
-    }
-};
-
+        void evaluate() override 
+        {
+            m_output.write(
+                logic_nor(
+                    m_inputA.read(),
+                    m_inputB.read()
+                )
+            );
+        }
+    };
 }
