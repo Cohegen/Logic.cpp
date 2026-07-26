@@ -1,8 +1,8 @@
 /*
 This program implements a 2:4 decoder
 */
-#ifndef DECODER_HPP
-#define DECODER_HPP
+#ifndef DEC2TO4_HPP
+#define DEC2TO4_HPP
 
 #include "Gates.h"
 #include <bitset>
