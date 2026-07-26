@@ -1,56 +1,96 @@
 /*
-This program implements a 2:4 decoder
+    2-to-4 Decoder
+
+    Truth Table
+
+    A   B   | Y0 Y1 Y2 Y3
+    ----------------------
+    0   0   | 1  0  0  0
+    0   1   | 0  1  0  0
+    1   0   | 0  0  1  0
+    1   1   | 0  0  0  1
 */
-#ifndef DEC2TO4_HPP
-#define DEC2TO4_HPP
 
-#include "Gates.h"
-#include <bitset>
-#include <cstddef>
-#include <iostream>
-#include <initializer_list>
+#pragma once
 
-class Decoder
+#include "Signals/wire.hpp"
+#include "Signals/logicstate.hpp"
+
+namespace logic
 {
-private:
-    std::bitset<2> inputs;
-    bool valid{true};
 
+class Dec2to4
+{
 public:
-    explicit Decoder(std::initializer_list<bool> in)
+    Dec2to4(
+        Wire& a,
+        Wire& b,
+        Wire& out0,
+        Wire& out1,
+        Wire& out2,
+        Wire& out3)
+        : m_inputA(a),
+          m_inputB(b),
+          m_output0(out0),
+          m_output1(out1),
+          m_output2(out2),
+          m_output3(out3)
     {
-        if (in.size() != 2) {
-            std::cerr << "Decoder expects 2 inputs\n";
-            valid = false;
+    }
+
+    void evaluate()
+    {
+        const LogicState a = m_inputA.read();
+        const LogicState b = m_inputB.read();
+
+        // Unknown input propagates to all outputs
+        if (a == LogicState::UNKNOWN ||
+            b == LogicState::UNKNOWN)
+        {
+            m_output0.write(LogicState::UNKNOWN);
+            m_output1.write(LogicState::UNKNOWN);
+            m_output2.write(LogicState::UNKNOWN);
+            m_output3.write(LogicState::UNKNOWN);
             return;
         }
 
-        std::size_t index = 0;
-        for (bool bit : in) {
-            inputs[index++] = bit;
+        // Defaulting all outputs LOW
+        m_output0.write(LogicState::LOW);
+        m_output1.write(LogicState::LOW);
+        m_output2.write(LogicState::LOW);
+        m_output3.write(LogicState::LOW);
+
+        // Activating exactly one output
+        if (a == LogicState::LOW &&
+            b == LogicState::LOW)
+        {
+            m_output0.write(LogicState::HIGH);
+        }
+        else if (a == LogicState::LOW &&
+                 b == LogicState::HIGH)
+        {
+            m_output1.write(LogicState::HIGH);
+        }
+        else if (a == LogicState::HIGH &&
+                 b == LogicState::LOW)
+        {
+            m_output2.write(LogicState::HIGH);
+        }
+        else
+        {
+            // A == HIGH && B == HIGH
+            m_output3.write(LogicState::HIGH);
         }
     }
 
-    explicit Decoder(const std::bitset<2>& in)
-        : inputs(in) {}
+private:
+    Wire& m_inputA;
+    Wire& m_inputB;
 
-    std::bitset<4> outputs() const
-    {
-        if (!valid) {
-            std::cerr << "Decoder expects 2 inputs\n";
-            return {};
-        }
-
-        const bool not0 = Gates{inputs[0]}.NOT();
-        const bool not1 = Gates{inputs[1]}.NOT();
-
-        std::bitset<4> result;
-        result[0] = Gates{not0, not1}.AND();
-        result[1] = Gates{not0, inputs[1]}.AND();
-        result[2] = Gates{inputs[0], not1}.AND();
-        result[3] = Gates{inputs[0], inputs[1]}.AND();
-        return result;
-    }
+    Wire& m_output0;
+    Wire& m_output1;
+    Wire& m_output2;
+    Wire& m_output3;
 };
 
-#endif
+} 
