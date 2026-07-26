@@ -11,7 +11,7 @@ Combinational logic means the output depends only on the current inputs, with no
 | `halfAdder.hpp` | Half adder | 2 bits (A, B) | sum, carry |
 | `fullAdder.hpp` | Full adder | 3 bits (A, B, Cin) | Sum, Carry |
 | `Multiplexer.hpp` | 4:1 multiplexer | 4 data lines + 2 select lines | 1 selected line |
-| `Decoder.hpp` | 2:4 decoder | 2 address bits | 4 one-hot outputs |
+| `Dec2to4.hpp` | 2:4 decoder | 2 address bits | 4 one-hot outputs |
 
 ## Design pattern
 
