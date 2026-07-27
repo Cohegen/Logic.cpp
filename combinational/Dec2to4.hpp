@@ -26,7 +26,6 @@
 
 #include "Signals/wire.hpp"
 #include "Signals/logicstate.hpp"
-
 #include "gates/NOT.hpp"
 #include "gates/AND.hpp"
 
@@ -73,22 +72,17 @@ public:
 private:
 
     // Internal wires
-   
-
     Wire m_notA;
     Wire m_notB;
 
-    
     // Internal gates
-   
-
     NotGate m_notGateA;
     NotGate m_notGateB;
 
-    AndGate m_and0;
-    AndGate m_and1;
-    AndGate m_and2;
-    AndGate m_and3;
+    ANDGate m_and0;
+    ANDGate m_and1;
+    ANDGate m_and2;
+    ANDGate m_and3;
 };
 
-} 
+} // namespace logic
