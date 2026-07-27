@@ -169,4 +169,4 @@ private:
     std::array<Wire, N> m_wires;
 };
 
-} // namespace logic
+} 

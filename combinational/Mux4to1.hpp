@@ -32,4 +32,4 @@ private:
     Mux2to1 m_mux2;
 };
 
-} 
+} // namespace logic

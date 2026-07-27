@@ -64,11 +64,14 @@ namespace logic
             case LogicState::LOW:
                 return LogicState::HIGH;
 
+            case LogicState::HIGH:
+                return LogicState::LOW;
+
             case LogicState::UNKNOWN:
-                  return LogicState::UNKNOWN;
+                return LogicState::UNKNOWN;
 
             case LogicState::HIGH_IMPEDANCE:
-                   return LogicState::UNKNOWN;
+                return LogicState::UNKNOWN;
         }
 
         return LogicState::UNKNOWN;

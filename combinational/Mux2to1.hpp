@@ -1,5 +1,5 @@
 /*
-    2-to-1 Multiplexer
+    2-to-1 Multiplexer built using gate-level components (NOT, AND, OR gates)
 
     Truth Table:
     Select | Output
@@ -9,38 +9,38 @@
 */
 #pragma once
 
-#include "Signals/logicstate.hpp"
 #include "Signals/wire.hpp"
+#include "gates/AND.hpp"
+#include "gates/NOT.hpp"
+#include "gates/OR.hpp"
 
 namespace logic {
 
 class Mux2to1 {
 public:
     Mux2to1(Wire& a, Wire& b, Wire& select, Wire& output)
-        : m_inputA(a), m_inputB(b), m_select(select), m_output(output) {}
+        : m_notGate(select, m_selectInv),
+          m_andGateA(a, m_selectInv, m_termA),
+          m_andGateB(b, select, m_termB),
+          m_orGate(m_termA, m_termB, output) {}
 
     void evaluate()
     {
-        const LogicState selectState = m_select.read();
-        if (selectState == LogicState::LOW)
-        {
-            m_output.write(m_inputA.read());
-        }
-        else if (selectState == LogicState::HIGH)
-        {
-            m_output.write(m_inputB.read());
-        }
-        else
-        {
-            m_output.write(LogicState::UNKNOWN);
-        }
+        m_notGate.evaluate();
+        m_andGateA.evaluate();
+        m_andGateB.evaluate();
+        m_orGate.evaluate();
     }
 
 private:
-    Wire& m_inputA;
-    Wire& m_inputB;
-    Wire& m_select;
-    Wire& m_output;
+    Wire m_selectInv;
+    Wire m_termA;
+    Wire m_termB;
+
+    NotGate m_notGate;
+    ANDGate m_andGateA;
+    ANDGate m_andGateB;
+    OrGate  m_orGate;
 };
 
-} 
+} // namespace logic
