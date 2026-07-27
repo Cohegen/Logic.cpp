@@ -9,6 +9,17 @@
     0   1   | 0  1  0  0
     1   0   | 0  0  1  0
     1   1   | 0  0  0  1
+
+    Implemented hierarchically using:
+        - 2 NOT gates
+        - 4 AND gates
+
+    Boolean Equations
+
+    Y0 = ¬A ∧ ¬B
+    Y1 = ¬A ∧  B
+    Y2 =  A ∧ ¬B
+    Y3 =  A ∧  B
 */
 
 #pragma once
@@ -16,12 +27,16 @@
 #include "Signals/wire.hpp"
 #include "Signals/logicstate.hpp"
 
+#include "gates/NOT.hpp"
+#include "gates/AND.hpp"
+
 namespace logic
 {
 
 class Dec2to4
 {
 public:
+
     Dec2to4(
         Wire& a,
         Wire& b,
@@ -29,68 +44,51 @@ public:
         Wire& out1,
         Wire& out2,
         Wire& out3)
-        : m_inputA(a),
-          m_inputB(b),
-          m_output0(out0),
-          m_output1(out1),
-          m_output2(out2),
-          m_output3(out3)
+        :
+        // Internal NOT stage
+        m_notGateA(a, m_notA),
+        m_notGateB(b, m_notB),
+
+        // AND stage
+        m_and0(m_notA, m_notB, out0),
+        m_and1(m_notA, b,      out1),
+        m_and2(a,      m_notB, out2),
+        m_and3(a,      b,      out3)
     {
     }
 
     void evaluate()
     {
-        const LogicState a = m_inputA.read();
-        const LogicState b = m_inputB.read();
+        // Generate inverted signals
+        m_notGateA.evaluate();
+        m_notGateB.evaluate();
 
-        // Unknown input propagates to all outputs
-        if (a == LogicState::UNKNOWN ||
-            b == LogicState::UNKNOWN)
-        {
-            m_output0.write(LogicState::UNKNOWN);
-            m_output1.write(LogicState::UNKNOWN);
-            m_output2.write(LogicState::UNKNOWN);
-            m_output3.write(LogicState::UNKNOWN);
-            return;
-        }
-
-        // Defaulting all outputs LOW
-        m_output0.write(LogicState::LOW);
-        m_output1.write(LogicState::LOW);
-        m_output2.write(LogicState::LOW);
-        m_output3.write(LogicState::LOW);
-
-        // Activating exactly one output
-        if (a == LogicState::LOW &&
-            b == LogicState::LOW)
-        {
-            m_output0.write(LogicState::HIGH);
-        }
-        else if (a == LogicState::LOW &&
-                 b == LogicState::HIGH)
-        {
-            m_output1.write(LogicState::HIGH);
-        }
-        else if (a == LogicState::HIGH &&
-                 b == LogicState::LOW)
-        {
-            m_output2.write(LogicState::HIGH);
-        }
-        else
-        {
-            // A == HIGH && B == HIGH
-            m_output3.write(LogicState::HIGH);
-        }
+        // Generate outputs
+        m_and0.evaluate();
+        m_and1.evaluate();
+        m_and2.evaluate();
+        m_and3.evaluate();
     }
 
 private:
-    Wire& m_inputA;
-    Wire& m_inputB;
 
-    Wire& m_output0;
-    Wire& m_output1;
-    Wire& m_output2;
-    Wire& m_output3;
+    // Internal wires
+   
+
+    Wire m_notA;
+    Wire m_notB;
+
+    
+    // Internal gates
+   
+
+    NotGate m_notGateA;
+    NotGate m_notGateB;
+
+    AndGate m_and0;
+    AndGate m_and1;
+    AndGate m_and2;
+    AndGate m_and3;
 };
 
 } 
