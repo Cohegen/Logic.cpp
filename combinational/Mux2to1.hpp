@@ -43,5 +43,5 @@ private:
     OrGate  m_orGate;
 };
 
-} // namespace logic
+} 
 
