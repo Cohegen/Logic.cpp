@@ -132,4 +132,4 @@ private:
     std::vector<std::unique_ptr<Comparator1Bit>> m_bitComps;
 };
 
-} // namespace logic
+} // namespace logic

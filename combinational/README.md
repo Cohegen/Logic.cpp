@@ -10,8 +10,13 @@ Combinational logic means the output depends only on the current inputs, with no
 |------|---------|--------|---------|
 | `halfAdder.hpp` | Half adder | 2 bits (A, B) | sum, carry |
 | `fullAdder.hpp` | Full adder | 3 bits (A, B, Cin) | Sum, Carry |
-| `Multiplexer.hpp` | 4:1 multiplexer | 4 data lines + 2 select lines | 1 selected line |
+| `halfSubtractor.hpp` | Half subtractor | 2 bits (A, B) | Difference, Borrow |
+| `fullSubtractor.hpp` | Full subtractor | 3 bits (A, B, Bin) | Difference, Borrow |
+| `Mux2to1.hpp` | 2:1 multiplexer | 2 data lines + 1 select line | 1 selected line |
+| `Mux4to1.hpp` | 4:1 multiplexer | 4 data lines + 2 select lines | 1 selected line |
 | `Dec2to4.hpp` | 2:4 decoder | 2 address bits | 4 one-hot outputs |
+| `RippleCarryAdder.hpp` | N-bit Ripple Carry Adder | N-bit A, N-bit B, Cin | N-bit Sum, Cout |
+| `Comparator.hpp` | N-bit magnitude comparator | N-bit A, N-bit B | Equal, Greater, Less |
 
 ## Design pattern
 
