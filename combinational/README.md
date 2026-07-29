@@ -51,8 +51,14 @@ The `HalfAdder` class directly instantiates primitive logic gates as private mem
 - **`ANDGate m_carryGate(a, b, carry)`**: Computes the bitwise carry ($A \cdot B$).
 
 #### Boolean Equations
-$$\text{Sum} = A \oplus B$$
-$$\text{Carry} = A \cdot B$$
+
+$$
+\text{Sum} = A \oplus B
+$$
+
+$$
+\text{Carry} = A \cdot B
+$$
 
 ![Half Adder Diagram](assets/halfadder.jfif)
 
@@ -99,9 +105,19 @@ Rather than redefining raw logic gates, `FullAdder` reuses two `HalfAdder` insta
 
 #### Why OR Gate is Used for Carries (Mutual Exclusivity Proof)
 The two intermediate carry signals $C_1$ and $C_2$ can **never** be HIGH simultaneously:
-$$C_1 = 1 \implies A = 1 \text{ and } B = 1$$
-$$\text{If } A = 1 \text{ and } B = 1 \implies S_1 = A \oplus B = 0$$
-$$C_2 = S_1 \cdot C_{in} = 0 \cdot C_{in} = 0$$
+
+$$
+C_1 = 1 \implies A = 1 \text{ and } B = 1
+$$
+
+$$
+\text{If } A = 1 \text{ and } B = 1 \implies S_1 = A \oplus B = 0
+$$
+
+$$
+C_2 = S_1 \cdot C_{in} = 0 \cdot C_{in} = 0
+$$
+
 Since $C_1 \cdot C_2 = 0$ for all input combinations, an `OrGate` yields identical behavior to an `XorGate` with lower propagation complexity.
 
 ![Full Adder Diagram](assets/fulladder.jfif)
@@ -138,13 +154,19 @@ Subtracts bit $B$ from bit $A$, yielding a `Difference` output and a `Borrow` ou
 
 #### Gate Primitive Breakdown
 The `HalfSubtractor` class directly instantiates three primitive logic gates:
-- **`NotGate not_gate(a, not_a_)`**: Inverts input $A$ to produce internal signal $\bar{A}$ (`not_a_`).
+- **`NotGate not_gate(a, not_a_)`**: Inverts input $A$ to produce internal signal $\overline{A}$ (`not_a_`).
 - **`XorGate difference_gate(a, b, difference)`**: Computes the bitwise difference ($A \oplus B$).
-- **`AndGate borrow_gate(not_a_, b, borrow)`**: Computes the borrow output ($\bar{A} \cdot B$).
+- **`AndGate borrow_gate(not_a_, b, borrow)`**: Computes the borrow output ($\overline{A} \cdot B$).
 
 #### Boolean Equations
-$$\text{Difference} = A \oplus B$$
-$$\text{Borrow} = \bar{A} \cdot B$$
+
+$$
+\text{Difference} = A \oplus B
+$$
+
+$$
+\text{Borrow} = \overline{A} \cdot B
+$$
 
 ![Half Subtractor Diagram](assets/halfsubtractor.png)
 
@@ -180,22 +202,32 @@ Computes subtraction over three bits ($A - B - B_{in}$) using **two `HalfSubtrac
 1. **`HalfSubtractor m_sub1(a, b, diff1_, borrow1_)`**:
    - Subtracts $B$ from $A$.
    - Produces intermediate difference $D_1$ (`diff1_`) and intermediate borrow $B_1$ (`borrow1_`).
-   - Equations: $D_1 = A \oplus B$, $B_1 = \bar{A} \cdot B$.
+   - Equations: $D_1 = A \oplus B$, $B_1 = \overline{A} \cdot B$.
 
 2. **`HalfSubtractor m_sub2(diff1_, bin, difference, borrow2_)`**:
    - Subtracts external borrow-in $B_{in}$ from intermediate difference $D_1$.
    - Produces final output **`Difference`** and intermediate borrow $B_2$ (`borrow2_`).
-   - Equations: $\text{Difference} = D_1 \oplus B_{in} = (A \oplus B) \oplus B_{in}$, $B_2 = \bar{D}_1 \cdot B_{in} = \overline{(A \oplus B)} \cdot B_{in}$.
+   - Equations: $\text{Difference} = D_1 \oplus B_{in} = (A \oplus B) \oplus B_{in}$, $B_2 = \overline{D}_1 \cdot B_{in} = \overline{(A \oplus B)} \cdot B_{in}$.
 
 3. **`OrGate or_gate(borrow1_, borrow2_, borrow)`**:
    - ORs intermediate borrows $B_1$ and $B_2$ to generate the final output **`Borrow`**.
-   - Equation: $\text{Borrow} = B_1 \lor B_2 = (\bar{A} \cdot B) \lor (\overline{(A \oplus B)} \cdot B_{in})$.
+   - Equation: $\text{Borrow} = B_1 \lor B_2 = (\overline{A} \cdot B) \lor (\overline{(A \oplus B)} \cdot B_{in})$.
 
 #### Why OR Gate is Used for Borrows (Mutual Exclusivity Proof)
 The intermediate borrow signals $B_1$ and $B_2$ are mutually exclusive ($B_1 \cdot B_2 = 0$):
-$$B_1 = 1 \implies A = 0 \text{ and } B = 1$$
-$$\text{If } A = 0 \text{ and } B = 1 \implies D_1 = A \oplus B = 1 \implies \bar{D}_1 = 0$$
-$$B_2 = \bar{D}_1 \cdot B_{in} = 0 \cdot B_{in} = 0$$
+
+$$
+B_1 = 1 \implies A = 0 \text{ and } B = 1
+$$
+
+$$
+\text{If } A = 0 \text{ and } B = 1 \implies D_1 = A \oplus B = 1 \implies \overline{D}_1 = 0
+$$
+
+$$
+B_2 = \overline{D}_1 \cdot B_{in} = 0 \cdot B_{in} = 0
+$$
+
 Because $B_1$ and $B_2$ cannot both be 1, an `OrGate` safely combines both intermediate borrow flags without collision.
 
 ![Full Subtractor Diagram](assets/fullSubtractor.jfif)
@@ -232,13 +264,16 @@ Routes one of two data inputs ($A$ or $B$) to the output line based on a single 
 
 #### Gate Primitive Breakdown
 Constructed using 4 primitive logic gates:
-- **`NotGate m_notGate(select, m_selectInv)`**: Inverts select line $S$ $\rightarrow \bar{S}$.
-- **`ANDGate m_andGateA(a, m_selectInv, m_termA)`**: Computes term $A \cdot \bar{S}$.
+- **`NotGate m_notGate(select, m_selectInv)`**: Inverts select line $S$ $\rightarrow \overline{S}$.
+- **`ANDGate m_andGateA(a, m_selectInv, m_termA)`**: Computes term $A \cdot \overline{S}$.
 - **`ANDGate m_andGateB(b, select, m_termB)`**: Computes term $B \cdot S$.
-- **`OrGate m_orGate(m_termA, m_termB, output)`**: Combines terms $\rightarrow Y = (A \cdot \bar{S}) \lor (B \cdot S)$.
+- **`OrGate m_orGate(m_termA, m_termB, output)`**: Combines terms $\rightarrow Y = (A \cdot \overline{S}) \lor (B \cdot S)$.
 
 #### Boolean Equation
-$$Y = (A \cdot \bar{S}) \lor (B \cdot S)$$
+
+$$
+Y = (A \cdot \overline{S}) \lor (B \cdot S)
+$$
 
 ![2-to-1 Mux Diagram](assets/mux2to1.jfif)
 
@@ -287,14 +322,26 @@ Decodes a 2-bit address ($A$, $B$) into four active-HIGH one-hot outputs ($Y_0, 
 
 #### Gate Primitive Breakdown
 Constructed using 6 primitive logic gates:
-- 2 **`NotGate`** (`m_notGateA`, `m_notGateB`): Generate inverted address lines $\bar{A}$ and $\bar{B}$.
+- 2 **`NotGate`** (`m_notGateA`, `m_notGateB`): Generate inverted address lines $\overline{A}$ and $\overline{B}$.
 - 4 **`AndGate`** (`m_and0` .. `m_and3`): Evaluate output minterms.
 
 #### Boolean Equations
-$$Y_0 = \bar{A} \cdot \bar{B}$$
-$$Y_1 = \bar{A} \cdot B$$
-$$Y_2 = A \cdot \bar{B}$$
-$$Y_3 = A \cdot B$$
+
+$$
+Y_0 = \overline{A} \cdot \overline{B}
+$$
+
+$$
+Y_1 = \overline{A} \cdot B
+$$
+
+$$
+Y_2 = A \cdot \overline{B}
+$$
+
+$$
+Y_3 = A \cdot B
+$$
 
 ![2-to-4 Decoder Diagram](assets/dec2to4.png)
 
@@ -311,9 +358,18 @@ Cascades $N$ `FullAdder` subcircuits to perform arbitrary-width binary addition.
 - Connects the `carryOut` wire of stage $i$ directly to the `carryIn` wire of stage $i+1$ via internal carry array `m_carries`.
 
 #### Carry Propagation Chain
-$$C_0 = C_{in}$$
-$$\text{FullAdder}_i(A_i, B_i, C_i) \longrightarrow (\text{Sum}_i, C_{i+1})$$
-$$C_{out} = C_N$$
+
+$$
+C_0 = C_{in}
+$$
+
+$$
+\text{FullAdder}_i(A_i, B_i, C_i) \longrightarrow (\text{Sum}_i, C_{i+1})
+$$
+
+$$
+C_{out} = C_N
+$$
 
 ![Ripple Carry Adder Diagram](assets/ripple_carry_adder.jfif)
 
@@ -333,7 +389,7 @@ Compares two $N$-bit buses ($A$ and $B$) to evaluate status outputs: `Equal` ($A
 
 #### Hierarchical Composition
 1. **`Comparator1Bit` (Primitive Gate Level)**:
-   - Evaluates bitwise equality ($A_i \odot B_i$ via `XnorGate`), bitwise greater ($A_i \cdot \bar{B}_i$ via `ANDGate`), and bitwise less ($\bar{A}_i \cdot B_i$ via `ANDGate`).
+   - Evaluates bitwise equality ($A_i \odot B_i$ via `XnorGate`), bitwise greater ($A_i \cdot \overline{B}_i$ via `ANDGate`), and bitwise less ($\overline{A}_i \cdot B_i$ via `ANDGate`).
 2. **`Comparator<N>` (Multi-Bit Composite)**:
    - Instantiates $N$ `Comparator1Bit` objects across `Bus<N>` signals from Most Significant Bit (MSB) down to Least Significant Bit (LSB).
 
