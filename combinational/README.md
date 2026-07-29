@@ -68,6 +68,8 @@ adder.Carry();  // majority function: AB ∨ BC ∨ AC
 
 Expects exactly 3 inputs.
 
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/fulladder.jfif)
+
 ---
 
 ## 4:1 multiplexer
