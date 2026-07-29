@@ -52,6 +52,7 @@ HalfAdder adder{true, true};
 adder.sum();    // XOR(A, B)
 adder.carry();  // AND(A, B)
 ```
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/halfadder.jfif)
 
 ---
 
