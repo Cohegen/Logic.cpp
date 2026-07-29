@@ -120,6 +120,8 @@ Each output is a minterm built from `NOT` and `AND`:
 - `out[2]` = A0 ∧ ¬A1
 - `out[3]` = A0 ∧ A1
 
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/dec2to4.png)
+
 ---
 
 ## Including in your code
