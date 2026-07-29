@@ -6,13 +6,8 @@ The `gates` module implements an object-oriented hardware simulation model for p
 
 Unlike pure mathematical functions, logic gates in this library are persistent hardware objects connected to `Wire` references. Each gate object reads state values from its connected input wire(s), computes the resulting logic state using 4-valued logic rules (`logicstate.hpp`), and writes the evaluated output state onto its output wire.
 
-```
-       +--------+
-A ---->|        |
-       |  GATE  |----> OUT
-B ---->|        |
-       +--------+
-```
+
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/gates/assets/gate.png)
 
 ### Execution Flow
 Every gate inherits from the abstract base class `logic::Gate` and implements the evaluation interface:
@@ -77,6 +72,7 @@ logic::Wire outputWire(logic::LogicState::LOW);
 logic::BufferGate buf(inputWire, outputWire);
 buf.evaluate(); // outputWire now reads HIGH
 ```
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/gates/assets/buffer.png)
 
 #### NOT Gate (`NOT.hpp`)
 Inverts the logic state of the input wire using `logic_not()`.
@@ -88,6 +84,7 @@ logic::Wire out;
 logic::NotGate inverter(in, out);
 inverter.evaluate(); // out now reads LOW
 ```
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/gates/assets/not.png)
 
 ---
 

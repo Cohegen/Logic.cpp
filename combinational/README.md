@@ -72,6 +72,7 @@ logic::Wire sum, carry;
 logic::HalfAdder adder(a, b, sum, carry);
 adder.evaluate(); // sum -> LOW, carry -> HIGH
 ```
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/halfadder.jfif)
 
 ---
 
@@ -165,6 +166,8 @@ void evaluate()
 }
 ```
 
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/fulladder.jfif)
+
 ---
 
 ### 4. Full Subtractor (`fullSubtractor.hpp`)
@@ -245,6 +248,10 @@ $$Y = (A \cdot \bar{S}) \lor (B \cdot S)$$
 |      0       |   Input $A$  |
 |      1       |   Input $B$  |
 
+
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/mux4to1.jfif)
+
+
 ---
 
 ### 6. 4-to-1 Multiplexer (`Mux4to1.hpp`)
@@ -290,6 +297,8 @@ $$Y_2 = A \cdot \bar{B}$$
 $$Y_3 = A \cdot B$$
 
 ![2-to-4 Decoder Diagram](assets/dec2to4.png)
+
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/dec2to4.png)
 
 ---
 
