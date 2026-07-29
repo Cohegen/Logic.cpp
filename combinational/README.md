@@ -91,6 +91,8 @@ mux.output();
 
 Implemented with minterms and `Gates` (AND/OR/NOT), not raw `if/else`.
 
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/combinational/assets/mux4to1.jfif)
+
 ---
 
 ## 2:4 decoder
