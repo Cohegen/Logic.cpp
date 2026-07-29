@@ -13,7 +13,7 @@ A ---->|        |
 B ---->|        |
        +--------+
 ```
-![output:](/assets/gate.png)
+![output:](https://github.com/Cohegen/Logic.cpp/blob/main/gates/assets/gate.png)
 
 ### Execution Flow
 Every gate inherits from the abstract base class `logic::Gate` and implements the evaluation interface:
