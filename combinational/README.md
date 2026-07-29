@@ -11,15 +11,15 @@ Combinational logic circuits are memoryless systems whose outputs are determined
 The combinational circuit library in `Logic.cpp` follows a strict two-tiered object-oriented hierarchy:
 
 1. **Gate Primitive Level (Atomic Building Blocks)**:
-   Base circuits (such as [`HalfAdder`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/halfAdder.hpp), [`HalfSubtractor`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/halfSubtractor.hpp), [`Mux2to1`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Mux2to1.hpp), [`Dec2to4`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Dec2to4.hpp), and `Comparator1Bit`) instantiate primitive logic gates directly (`XorGate`, `ANDGate`, `NotGate`, `OrGate`, `XnorGate`). They map direct Boolean algebraic expressions into gate objects.
+   Base circuits (such as [`HalfAdder`](halfAdder.hpp), [`HalfSubtractor`](halfSubtractor.hpp), [`Mux2to1`](Mux2to1.hpp), [`Dec2to4`](Dec2to4.hpp), and `Comparator1Bit`) instantiate primitive logic gates directly (`XorGate`, `ANDGate`, `NotGate`, `OrGate`, `XnorGate`). They map direct Boolean algebraic expressions into gate objects.
 
 2. **Hierarchical Composite Level (Subcircuit Composition)**:
    Complex digital subsystems are constructed by composing existing, verified subcircuits alongside necessary glue logic, rather than re-implementing raw logic gates from scratch:
-   - **[`FullAdder`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/fullAdder.hpp)** is constructed by cascading **2 [`HalfAdder`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/halfAdder.hpp) subcircuits** and 1 primitive `OrGate`.
-   - **[`FullSubtractor`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/fullSubtractor.hpp)** is constructed by cascading **2 [`HalfSubtractor`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/halfSubtractor.hpp) subcircuits** and 1 primitive `OrGate`.
-   - **[`Mux4to1`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Mux4to1.hpp)** is constructed by nesting **3 [`Mux2to1`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Mux2to1.hpp) subcircuits**.
-   - **[`RippleCarryAdder<N>`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/RippleCarryAdder.hpp)** is constructed by cascading **$N$ [`FullAdder`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/fullAdder.hpp) subcircuits** using internal carry wires.
-   - **[`Comparator<N>`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Comparator.hpp)** is constructed by aggregating **$N$ `Comparator1Bit` subcircuits** connected via multi-bit `Bus<N>` signals.
+   - **[`FullAdder`](fullAdder.hpp)** is constructed by cascading **2 [`HalfAdder`](halfAdder.hpp) subcircuits** and 1 primitive `OrGate`.
+   - **[`FullSubtractor`](fullSubtractor.hpp)** is constructed by cascading **2 [`HalfSubtractor`](halfSubtractor.hpp) subcircuits** and 1 primitive `OrGate`.
+   - **[`Mux4to1`](Mux4to1.hpp)** is constructed by nesting **3 [`Mux2to1`](Mux2to1.hpp) subcircuits**.
+   - **[`RippleCarryAdder<N>`](RippleCarryAdder.hpp)** is constructed by cascading **$N$ [`FullAdder`](fullAdder.hpp) subcircuits** using internal carry wires.
+   - **[`Comparator<N>`](Comparator.hpp)** is constructed by aggregating **$N$ `Comparator1Bit` subcircuits** connected via multi-bit `Bus<N>` signals.
 
 ---
 
@@ -27,15 +27,15 @@ The combinational circuit library in `Logic.cpp` follows a strict two-tiered obj
 
 | Header | Circuit Class | Composition Level | Component Breakdown | Sub-Components / Gates Used |
 |--------|---------------|-------------------|---------------------|-----------------------------|
-| [`halfAdder.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/halfAdder.hpp) | `HalfAdder` | **Gate Primitive** | 2 Primitive Gates | 1 `XorGate`, 1 `ANDGate` |
-| [`fullAdder.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/fullAdder.hpp) | `FullAdder` | **Hierarchical Composite** | 2 Sub-Components + 1 Gate | 2 `HalfAdder`, 1 `OrGate` |
-| [`halfSubtractor.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/halfSubtractor.hpp) | `HalfSubtractor` | **Gate Primitive** | 3 Primitive Gates | 1 `NotGate`, 1 `XorGate`, 1 `AndGate` |
-| [`fullSubtractor.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/fullSubtractor.hpp) | `FullSubtractor` | **Hierarchical Composite** | 2 Sub-Components + 1 Gate | 2 `HalfSubtractor`, 1 `OrGate` |
-| [`Mux2to1.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Mux2to1.hpp) | `Mux2to1` | **Gate Primitive** | 4 Primitive Gates | 1 `NotGate`, 2 `ANDGate`, 1 `OrGate` |
-| [`Mux4to1.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Mux4to1.hpp) | `Mux4to1` | **Hierarchical Composite** | 3 Sub-Components | 3 `Mux2to1` |
-| [`Dec2to4.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Dec2to4.hpp) | `Dec2to4` | **Gate Primitive** | 6 Primitive Gates | 2 `NotGate`, 4 `AndGate` |
-| [`RippleCarryAdder.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/RippleCarryAdder.hpp) | `RippleCarryAdder<N>` | **Templated Cascaded** | $N$ Sub-Components | $N$ `FullAdder` |
-| [`Comparator.hpp`](file:///c:/Users/HP%20840%20G3/OneDrive/Desktop/Logic.cpp/combinational/Comparator.hpp) | `Comparator<N>` | **Templated Cascaded** | $N$ Sub-Components + Bus | $N$ `Comparator1Bit` (each with 2 `NotGate`, 1 `XnorGate`, 2 `ANDGate`) |
+| [`halfAdder.hpp`](halfAdder.hpp) | `HalfAdder` | **Gate Primitive** | 2 Primitive Gates | 1 `XorGate`, 1 `ANDGate` |
+| [`fullAdder.hpp`](fullAdder.hpp) | `FullAdder` | **Hierarchical Composite** | 2 Sub-Components + 1 Gate | 2 `HalfAdder`, 1 `OrGate` |
+| [`halfSubtractor.hpp`](halfSubtractor.hpp) | `HalfSubtractor` | **Gate Primitive** | 3 Primitive Gates | 1 `NotGate`, 1 `XorGate`, 1 `AndGate` |
+| [`fullSubtractor.hpp`](fullSubtractor.hpp) | `FullSubtractor` | **Hierarchical Composite** | 2 Sub-Components + 1 Gate | 2 `HalfSubtractor`, 1 `OrGate` |
+| [`Mux2to1.hpp`](Mux2to1.hpp) | `Mux2to1` | **Gate Primitive** | 4 Primitive Gates | 1 `NotGate`, 2 `ANDGate`, 1 `OrGate` |
+| [`Mux4to1.hpp`](Mux4to1.hpp) | `Mux4to1` | **Hierarchical Composite** | 3 Sub-Components | 3 `Mux2to1` |
+| [`Dec2to4.hpp`](Dec2to4.hpp) | `Dec2to4` | **Gate Primitive** | 6 Primitive Gates | 2 `NotGate`, 4 `AndGate` |
+| [`RippleCarryAdder.hpp`](RippleCarryAdder.hpp) | `RippleCarryAdder<N>` | **Templated Cascaded** | $N$ Sub-Components | $N$ `FullAdder` |
+| [`Comparator.hpp`](Comparator.hpp) | `Comparator<N>` | **Templated Cascaded** | $N$ Sub-Components + Bus | $N$ `Comparator1Bit` (each with 2 `NotGate`, 1 `XnorGate`, 2 `ANDGate`) |
 
 ---
 
