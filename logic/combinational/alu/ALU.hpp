@@ -218,4 +218,4 @@ private:
     Wire& carry_;
 };
 
-} // namespace logic
+} 
