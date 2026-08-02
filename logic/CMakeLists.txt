@@ -46,3 +46,13 @@ target_link_libraries(test_piso
         logic
 )
 
+add_executable(test_shift_registers
+    examples/test_shift_registers.cpp
+)
+
+target_link_libraries(test_shift_registers
+    PRIVATE
+        logic
+)
+
+
