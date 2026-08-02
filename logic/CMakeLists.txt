@@ -36,3 +36,13 @@ target_link_libraries(logic_cpp
     PRIVATE
         logic_gates
 )
+
+add_executable(test_piso
+    examples/test_piso.cpp
+)
+
+target_link_libraries(test_piso
+    PRIVATE
+        logic
+)
+

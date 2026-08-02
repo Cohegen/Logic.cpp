@@ -19,7 +19,7 @@
 #include "signals/wire.hpp"
 
 #include "gates/NOT.hpp"
-#include "latches/DLatch.hpp"
+#include "sequential/latches/DLatch.hpp"
 
 namespace logic
 {
