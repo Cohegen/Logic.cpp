@@ -45,12 +45,13 @@
 #include "sequential/flipflops/D_flip_flop.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
 template <std::size_t N>
-class ShiftRegisterSIPO
+class ShiftRegisterSIPO:public Component
 {
     static_assert(
         N > 0,

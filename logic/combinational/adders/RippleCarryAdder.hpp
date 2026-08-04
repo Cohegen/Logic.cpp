@@ -15,12 +15,13 @@
 
 #include "combinational/adders/FullAdder.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
 template <std::size_t N>
-class RippleCarryAdder
+class RippleCarryAdder:public Component
 {
 public:
     RippleCarryAdder(std::array<Wire, N>& a,

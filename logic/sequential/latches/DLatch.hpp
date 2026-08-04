@@ -9,11 +9,12 @@
 #include "gates/NOT.hpp"
 #include "sequential/latches/GatedSRLatch.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
-class DLatch
+class DLatch:public Component
 {
 public:
     DLatch(

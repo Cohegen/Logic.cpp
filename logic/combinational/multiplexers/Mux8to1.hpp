@@ -29,11 +29,12 @@
 #include "signals/wire.hpp"
 #include "combinational/multiplexers/Mux4to1.hpp"
 #include "combinational/multiplexers/Mux2to1.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
-class Mux8to1
+class Mux8to1:public Component
 {
 public:
 

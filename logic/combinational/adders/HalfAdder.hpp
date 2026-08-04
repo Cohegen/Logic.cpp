@@ -7,11 +7,11 @@ implementation of a half adder
 #include "signals/wire.hpp"
 #include "gates/XOR.hpp"
 #include "gates/AND.hpp"
-
+#include "simulator/Component.hpp"
 
 namespace logic
 {
-    class HalfAdder
+    class HalfAdder:public Component
     {
          public:
            HalfAdder(Wire& a,Wire& b,Wire& sum,Wire& carry):

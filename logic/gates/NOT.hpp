@@ -6,9 +6,9 @@ The NOT gate has one input A and one output Y
 #pragma once
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
-
+#include "simulator/Component.hpp"
 namespace logic {
-    class NotGate:public Gate{
+    class NotGate:public Component{
         public:
            NotGate(Wire& input,Wire& output):m_input(input),m_output(output){}
 

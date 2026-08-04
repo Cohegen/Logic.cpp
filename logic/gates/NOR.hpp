@@ -7,10 +7,11 @@ NOR gate is the inverse of OR gate
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
 #include "gates/binary_gate.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic 
 {
-    class NorGate : public BinaryGate 
+    class NorGate : public Component 
     {
     public:
         NorGate(Wire& a, Wire& b, Wire& out)

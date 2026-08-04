@@ -11,11 +11,12 @@
 
 #include "gates/NOT.hpp"
 #include "signals/bus.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
     template <std::size_t N>
-    class BitwiseNot
+    class BitwiseNot:public Component
     {
     public:
         BitwiseNot(

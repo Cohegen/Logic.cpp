@@ -26,14 +26,14 @@
 
 #include "signals/wire.hpp"
 #include "signals/logicState.hpp"
-
+#include "simulator/Component.hpp"
 #include "gates/NOT.hpp"
 #include "gates/AND.hpp"
 
 namespace logic
 {
 
-class Dec2to4
+class Dec2to4:public Component
 {
 public:
 

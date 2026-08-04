@@ -11,11 +11,11 @@
 
 #include "gates/AND.hpp"
 #include "signals/bus.hpp"
-
+#include "simulator/Component.hpp"
 namespace logic
 {
     template <std::size_t N>
-    class BitwiseAnd
+    class BitwiseAnd:public Component
     {
     public:
         BitwiseAnd(

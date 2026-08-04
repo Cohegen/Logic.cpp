@@ -8,11 +8,11 @@ otherwise false
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
 #include "gates/binary_gate.hpp"
-
+#include "simulator/Component.hpp"
 namespace logic
 {
 
-class OrGate : public BinaryGate
+class OrGate : public Component
 {
 public:
     OrGate(Wire& a, Wire& b, Wire& out)

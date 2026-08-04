@@ -16,12 +16,13 @@
 #include "signals/bus.hpp"
 #include "gates/OR.hpp"
 #include "combinational/comparators/Comparator1Bit.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic {
 
 /// N-Bit Magnitude Comparator using Bus<N>
 template <std::size_t N>
-class Comparator {
+class Comparator:public Component {
     static_assert(N > 0, "Comparator bit-width N must be greater than zero.");
 
 public:

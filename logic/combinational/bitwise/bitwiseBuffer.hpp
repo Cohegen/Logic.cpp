@@ -11,11 +11,12 @@
 
 #include "gates/BUFFER.hpp"
 #include "signals/bus.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
     template <std::size_t N>
-    class BitwiseBuffer
+    class BitwiseBuffer:public Component
     {
     public:
         BitwiseBuffer(

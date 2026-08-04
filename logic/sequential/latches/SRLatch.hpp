@@ -11,11 +11,12 @@
 #include "gates/NOR.hpp"
 #include "signals/logicState.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
-class SRLatch
+class SRLatch:public Component
 {
 public:
     SRLatch(

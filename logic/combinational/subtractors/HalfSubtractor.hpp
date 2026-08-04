@@ -25,11 +25,12 @@
 #include "gates/NOT.hpp"
 #include "gates/AND.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
-class HalfSubtractor
+class HalfSubtractor:public Component
 {
 public:
 

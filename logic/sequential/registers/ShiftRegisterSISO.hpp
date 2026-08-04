@@ -45,12 +45,13 @@
 
 #include "sequential/flipflops/D_flip_flop.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
 template <std::size_t N>
-class ShiftRegisterSISO
+class ShiftRegisterSISO:public Component
 {
     static_assert(N > 0, "Shift register must contain at least one flip-flop.");
 

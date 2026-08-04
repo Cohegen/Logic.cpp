@@ -5,11 +5,11 @@ It is true when both inputs have similar values
 
 #pragma once 
 #include "gates/Gate.hpp"
-#include "signals/wire.hpp"
-#include "gates/binary_gate.hpp"
+#include "signals/wire.hpp
+#include "simulator/Component.hpp"
 
 namespace logic{
-    class XnorGate:public BinaryGate
+    class XnorGate:public Component
     {
            public:
                XnorGate(Wire& a,Wire& b,Wire& out):

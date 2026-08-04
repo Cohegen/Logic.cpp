@@ -6,10 +6,11 @@
 #include "signals/logicState.hpp"
 #include "signals/wire.hpp"
 #include "combinational/multiplexers/Mux2to1.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic {
 
-class Mux4to1 {
+class Mux4to1: public Component {
 public:
     Mux4to1(Wire& a, Wire& b, Wire& c, Wire& d, Wire& select0, Wire& select1, Wire& output)
         : m_mux0(a, b, select0, m_internal0),

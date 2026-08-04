@@ -23,12 +23,13 @@
 #include "signals/bus.hpp"
 #include "signals/logicState.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
 template <std::size_t N>
-class ALU
+class ALU:public Component
 {
 public:
     ALU(Bus<N>& a,

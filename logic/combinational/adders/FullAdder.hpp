@@ -6,11 +6,12 @@ Implementation of a full adder
 #include "combinational/adders/HalfAdder.hpp"
 #include "gates/OR.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
-class FullAdder
+class FullAdder:public Component
 {
 public:
     FullAdder() = default;

@@ -7,10 +7,10 @@ its inputs have different values otherwise false
 #pragma once 
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
-#include "gates/binary_gate.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic{
-    class XorGate:public BinaryGate
+    class XorGate:public Component
     {
         public:
             XorGate(Wire& a, Wire& b, Wire& out):

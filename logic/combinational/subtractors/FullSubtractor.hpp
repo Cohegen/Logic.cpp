@@ -16,11 +16,12 @@
 #include "signals/wire.hpp"
 #include "combinational/subtractors/HalfSubtractor.hpp"
 #include "gates/OR.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
-class FullSubtractor
+class FullSubtractor:public Component
 {
 public:
 

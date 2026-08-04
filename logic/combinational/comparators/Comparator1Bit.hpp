@@ -5,11 +5,12 @@
 #include "gates/AND.hpp"
 #include "gates/NOT.hpp"
 #include "gates/XNOR.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic {
 
 /// 1-Bit Magnitude Comparator
-class Comparator1Bit {
+class Comparator1Bit:public Component {
 public:
     Comparator1Bit(Wire& a, Wire& b, Wire& equal, Wire& greater, Wire& less)
         : m_notA(a, m_invA),

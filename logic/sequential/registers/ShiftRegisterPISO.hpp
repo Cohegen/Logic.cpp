@@ -49,11 +49,12 @@
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "combinational/multiplexers/Mux2to1.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic {
 
 template <std::size_t N>
-class ShiftRegisterPISO {
+class ShiftRegisterPISO :public Component{
     static_assert(
         N > 0,
         "Shift register must contain at least one flip-flop."

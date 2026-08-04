@@ -13,10 +13,11 @@
 #include "gates/AND.hpp"
 #include "gates/NOT.hpp"
 #include "gates/OR.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic {
 
-class Mux2to1 {
+class Mux2to1: public Component {
 public:
     Mux2to1(Wire& a, Wire& b, Wire& select, Wire& output)
         : m_notGate(select, m_selectInv),

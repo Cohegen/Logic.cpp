@@ -11,11 +11,12 @@
 
 #include "gates/OR.hpp"
 #include "signals/bus.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
     template <std::size_t N>
-    class BitwiseOr
+    class BitwiseOr:public Component
     {
     public:
         BitwiseOr(

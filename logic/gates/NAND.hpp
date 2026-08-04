@@ -6,10 +6,11 @@ NAND gate is the inverse of AND gate
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
 #include "gates/binary_gate.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic 
 {
-    class NandGate :public BinaryGate
+    class NandGate :public Component
     {
         public:
             NandGate(Wire& a,Wire& b,Wire& out):

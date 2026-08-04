@@ -16,12 +16,13 @@
 #include "signals/wire.hpp"
 
 #include "flipflops/DFlipFlop.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
 template <std::size_t N>
-class Register
+class Register:public Component
 {
 public:
     Register(

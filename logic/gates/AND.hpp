@@ -8,9 +8,10 @@ both inputs are TRUE
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
 #include "gates/binary_gate.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic{
-    class ANDGate:public BinaryGate
+    class ANDGate:public Component
     {
          public:
             ANDGate(Wire& a, Wire& b, Wire& out):

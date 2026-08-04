@@ -11,11 +11,12 @@
 
 #include "gates/XOR.hpp"
 #include "signals/bus.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
     template <std::size_t N>
-    class BitwiseXor
+    class BitwiseXor:public Component
     {
     public:
         BitwiseXor(
@@ -54,4 +55,4 @@ namespace logic
         std::vector<XorGate> gates_;
     };
 
-} // namespace logic
+} 

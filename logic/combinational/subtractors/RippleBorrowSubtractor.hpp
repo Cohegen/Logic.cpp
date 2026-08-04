@@ -15,12 +15,13 @@
 
 #include "combinational/subtractors/FullSubtractor.hpp"
 #include "signals/wire.hpp"
+#include "simulator/Component.hpp"
 
 namespace logic
 {
 
 template <std::size_t N>
-class RippleBorrowSubtractor
+class RippleBorrowSubtractor:public Component
 {
 public:
     RippleBorrowSubtractor(std::array<Wire, N>& a,
