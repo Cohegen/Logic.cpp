@@ -25,7 +25,7 @@ public:
           m_andGateB(b, select, m_termB),
           m_orGate(m_termA, m_termB, output) {}
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         m_notGate.evaluate();
         m_andGateA.evaluate();

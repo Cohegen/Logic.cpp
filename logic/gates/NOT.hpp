@@ -12,7 +12,7 @@ namespace logic {
         public:
            NotGate(Wire& input,Wire& output):m_input(input),m_output(output){}
 
-           void evaluate() override
+           void evaluate() noexcept override
            {
             m_output.write(
                 logic_not(m_input.read())

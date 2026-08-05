@@ -17,7 +17,7 @@ namespace logic
            HalfAdder(Wire& a,Wire& b,Wire& sum,Wire& carry):
                 m_sumGate(a,b,sum),m_carryGate(a,b,carry){}
 
-            void evaluate()  
+            void evaluate() noexcept override
             {
                 m_sumGate.evaluate();
                 m_carryGate.evaluate();

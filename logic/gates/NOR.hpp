@@ -11,13 +11,13 @@ NOR gate is the inverse of OR gate
 
 namespace logic 
 {
-    class NorGate : public Component 
+    class NorGate : public BinaryGate 
     {
     public:
         NorGate(Wire& a, Wire& b, Wire& out)
             : BinaryGate(a, b, out) {}
 
-        void evaluate() override 
+        void evaluate() noexcept override 
         {
             m_output.write(
                 logic_nor(

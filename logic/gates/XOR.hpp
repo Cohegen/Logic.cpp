@@ -7,16 +7,17 @@ its inputs have different values otherwise false
 #pragma once 
 #include "gates/Gate.hpp"
 #include "signals/wire.hpp"
+#include "gates/binary_gate.hpp"
 #include "simulator/Component.hpp"
 
 namespace logic{
-    class XorGate:public Component
+    class XorGate : public BinaryGate
     {
         public:
             XorGate(Wire& a, Wire& b, Wire& out):
-                 BinaryGate(a,b,out){}
+                 BinaryGate(a, b, out){}
 
-            void evaluate()override
+            void evaluate() noexcept override
             {
                 m_output.write(
                     logic_xor(

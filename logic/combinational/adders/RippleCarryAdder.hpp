@@ -29,6 +29,36 @@ public:
                      Wire& carryIn,
                      std::array<Wire, N>& sum,
                      Wire& carryOut)
+        : RippleCarryAdder(a.data(), b.data(), carryIn, sum.data(), carryOut)
+    {
+    }
+
+    RippleCarryAdder(Bus<N>& a,
+                     Bus<N>& b,
+                     Wire& carryIn,
+                     Bus<N>& sum,
+                     Wire& carryOut)
+        : RippleCarryAdder(&a[0], &b[0], carryIn, &sum[0], carryOut)
+    {
+    }
+
+    void evaluate() noexcept override
+    {
+        for (auto& adder : m_fullAdders)
+        {
+            if (adder)
+            {
+                adder->evaluate();
+            }
+        }
+    }
+
+private:
+    RippleCarryAdder(Wire* a,
+                     Wire* b,
+                     Wire& carryIn,
+                     Wire* sum,
+                     Wire& carryOut)
     {
         static_assert(N > 0, "RippleCarryAdder must have at least one bit.");
 
@@ -72,19 +102,6 @@ public:
             sum[N - 1],
             carryOut);
     }
-
-    void evaluate()
-    {
-        for (auto& adder : m_fullAdders)
-        {
-            if (adder)
-            {
-                adder->evaluate();
-            }
-        }
-    }
-
-private:
     // Internal carry wires
     std::array<Wire, (N > 1 ? N - 1 : 0)> m_carries;
 

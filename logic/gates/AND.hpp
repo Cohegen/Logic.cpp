@@ -11,16 +11,16 @@ both inputs are TRUE
 #include "simulator/Component.hpp"
 
 namespace logic{
-    class ANDGate:public Component
+    class ANDGate : public BinaryGate
     {
          public:
             ANDGate(Wire& a, Wire& b, Wire& out):
-                 BinaryGate(a,b,out){}
+                 BinaryGate(a, b, out) {}
 
-            void evaluate() override
+            void evaluate() noexcept override
             {
                 m_output.write(
-                    logic_and(m_inputA.read(),m_inputB.read())
+                    logic_and(m_inputA.read(), m_inputB.read())
                 );
             }
     };

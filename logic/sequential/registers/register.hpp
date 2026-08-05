@@ -15,7 +15,7 @@
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 
-#include "flipflops/DFlipFlop.hpp"
+#include "sequential/flipflops/D_flip_flop.hpp"
 #include "simulator/Component.hpp"
 
 namespace logic

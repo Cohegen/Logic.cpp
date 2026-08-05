@@ -26,7 +26,7 @@ public:
     {
     }
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         m_halfAdder1.evaluate();
         m_halfAdder2.evaluate();

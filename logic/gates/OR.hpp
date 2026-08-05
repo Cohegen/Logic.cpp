@@ -12,7 +12,7 @@ otherwise false
 namespace logic
 {
 
-class OrGate : public Component
+class OrGate : public BinaryGate
 {
 public:
     OrGate(Wire& a, Wire& b, Wire& out)
@@ -20,7 +20,7 @@ public:
     {
     }
 
-    void evaluate() override
+    void evaluate() noexcept override
     {
         m_output.write(
             logic_or(
