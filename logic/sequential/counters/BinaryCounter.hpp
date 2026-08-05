@@ -52,7 +52,7 @@ namespace logic {
         {
             clock_wire_.write(clock_.state());
 
-            // 1. Setup constant inputs
+            // Setting up constant inputs
             constant_one_[0].write(LogicState::HIGH);
             for (std::size_t i = 1; i < N; ++i) {
                 constant_one_[i].write(LogicState::LOW);
@@ -60,15 +60,15 @@ namespace logic {
             carry_in_.write(LogicState::LOW);
             zero_wire_.write(LogicState::LOW);
 
-            // 2. Compute count + 1 using adder
+            // Computing count + 1 using adder
             r_adder_.evaluate();
 
-            // 3. Pass outputs through enable & reset multiplexers
+            // Passing outputs through enable & reset multiplexers
             for (auto& mux : muxes_) {
                 mux.evaluate();
             }
 
-            // 4. Clock update on register
+            // Clocking update on register
             reg_.evaluate();
         }
 
