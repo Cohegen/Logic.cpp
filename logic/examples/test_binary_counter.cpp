@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cassert>
-#include <vector>
 
 #include "signals/wire.hpp"
 #include "signals/bus.hpp"
@@ -14,9 +13,10 @@ using logic::Clock;
 using logic::LogicState;
 using logic::BinaryCounter;
 
-int read_bus_as_int(const Bus<4>& bus) {
+template <std::size_t N>
+int read_bus_as_int(const Bus<N>& bus) {
     int val = 0;
-    for (std::size_t i = 0; i < 4; ++i) {
+    for (std::size_t i = 0; i < N; ++i) {
         if (bus[i].read() == LogicState::HIGH) {
             val |= (1 << i);
         }
@@ -24,75 +24,90 @@ int read_bus_as_int(const Bus<4>& bus) {
     return val;
 }
 
-void test_binary_counter_4bit() {
-    std::cout << "--- Testing 4-bit BinaryCounter ---\n";
+template <std::size_t N>
+void step_clock(BinaryCounter<N>& counter, Clock& clock) {
+    counter.evaluate();
+    clock.tick(); // LOW -> HIGH
+    counter.evaluate();
+    clock.tick(); // HIGH -> LOW
+    counter.evaluate();
+}
+
+void test_reset_initializes_count_to_zero() {
+    std::cout << "Testing reset initializes count to zero...\n";
+
+    Clock clock;
+    Wire enable{LogicState::HIGH};
+    Wire reset{LogicState::HIGH};
+    Bus<4> count;
+    BinaryCounter<4> counter(clock, enable, reset, count);
+
+    step_clock(counter, clock);
+    assert(read_bus_as_int(count) == 0);
+}
+
+void test_counter_increments_over_several_cycles() {
+    std::cout << "Testing counter increments over several cycles...\n";
 
     Clock clock;
     Wire enable{LogicState::HIGH};
     Wire reset{LogicState::LOW};
     Bus<4> count;
-
     BinaryCounter<4> counter(clock, enable, reset, count);
 
-    auto step_clock = [&]() {
-        counter.evaluate();
-        clock.tick(); // LOW -> HIGH (rising edge)
-        counter.evaluate();
-        clock.tick(); // HIGH -> LOW
-        counter.evaluate();
-    };
-
-    // 1. Initial evaluate
     counter.evaluate();
-    std::cout << "Initial count: " << read_bus_as_int(count) << "\n";
+    assert(read_bus_as_int(count) == 0);
 
-    // 2. Count up from 0 to 15
+    for (int expected = 1; expected <= 6; ++expected) {
+        step_clock(counter, clock);
+        assert(read_bus_as_int(count) == expected);
+    }
+}
+
+void test_enable_low_holds_current_value() {
+    std::cout << "Testing enable LOW holds current value...\n";
+
+    Clock clock;
+    Wire enable{LogicState::HIGH};
+    Wire reset{LogicState::LOW};
+    Bus<4> count;
+    BinaryCounter<4> counter(clock, enable, reset, count);
+
+    for (int i = 0; i < 5; ++i) {
+        step_clock(counter, clock);
+    }
+    assert(read_bus_as_int(count) == 5);
+
+    enable.write(LogicState::LOW);
+    for (int i = 0; i < 3; ++i) {
+        step_clock(counter, clock);
+    }
+    assert(read_bus_as_int(count) == 5);
+}
+
+void test_4bit_counter_wraps_from_15_to_0() {
+    std::cout << "Testing 4-bit counter wraps from 15 to 0...\n";
+
+    Clock clock;
+    Wire enable{LogicState::HIGH};
+    Wire reset{LogicState::LOW};
+    Bus<4> count;
+    BinaryCounter<4> counter(clock, enable, reset, count);
+
     for (int expected = 1; expected <= 15; ++expected) {
-        step_clock();
-        int actual = read_bus_as_int(count);
-        std::cout << "Step " << expected << " count: " << actual << std::endl;
-        assert(actual == (expected % 16));
+        step_clock(counter, clock);
+        assert(read_bus_as_int(count) == expected);
     }
 
-    // 3. Overflow test (15 -> 0)
-    step_clock();
-    int actual_overflow = read_bus_as_int(count);
-    std::cout << "After overflow count: " << actual_overflow << "\n";
-    assert(actual_overflow == 0);
-
-    // 4. Disable test (hold count)
-    enable.write(LogicState::LOW);
-    step_clock();
-    step_clock();
-    int actual_disabled = read_bus_as_int(count);
-    std::cout << "Count when disabled: " << actual_disabled << "\n";
-    assert(actual_disabled == 0);
-
-    // Re-enable and count 2 steps to 2
-    enable.write(LogicState::HIGH);
-    step_clock();
-    step_clock();
-    int count_after_reenable = read_bus_as_int(count);
-    std::cout << "Count after re-enable 2 steps (expected 2): " << count_after_reenable << "\n";
-    assert(count_after_reenable == 2);
-
-    // 5. Synchronous Reset test
-    reset.write(LogicState::HIGH);
-    step_clock();
-    int actual_reset = read_bus_as_int(count);
-    std::cout << "Count after reset (expected 0): " << actual_reset << "\n";
-    assert(actual_reset == 0);
-
-    // Release reset
-    reset.write(LogicState::LOW);
-    step_clock();
-    std::cout << "Count after releasing reset: " << read_bus_as_int(count) << "\n";
-    assert(read_bus_as_int(count) == 1);
-
-    std::cout << "4-bit BinaryCounter Test Passed!\n\n";
+    step_clock(counter, clock);
+    assert(read_bus_as_int(count) == 0);
 }
 
 int main() {
-    test_binary_counter_4bit();
+    test_reset_initializes_count_to_zero();
+    test_counter_increments_over_several_cycles();
+    test_enable_low_holds_current_value();
+    test_4bit_counter_wraps_from_15_to_0();
+    std::cout << "BinaryCounter tests passed.\n";
     return 0;
 }

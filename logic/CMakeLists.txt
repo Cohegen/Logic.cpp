@@ -55,4 +55,13 @@ target_link_libraries(test_shift_registers
         logic
 )
 
+add_executable(test_binary_counter
+    examples/test_binary_counter.cpp
+)
+
+target_link_libraries(test_binary_counter
+    PRIVATE
+        logic
+)
+
 

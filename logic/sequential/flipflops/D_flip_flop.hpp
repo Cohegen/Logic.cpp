@@ -57,6 +57,10 @@ public:
               q_bar_
           )
     {
+        master_q_.write(LogicState::LOW);
+        master_q_bar_.write(LogicState::HIGH);
+        q_.write(LogicState::LOW);
+        q_bar_.write(LogicState::HIGH);
     }
 
     [[nodiscard]]

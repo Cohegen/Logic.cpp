@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "combinational/subtractors/FullSubtractor.hpp"
+#include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "simulator/Component.hpp"
 
@@ -28,6 +29,36 @@ public:
                            std::array<Wire, N>& b,
                            Wire& borrowIn,
                            std::array<Wire, N>& difference,
+                           Wire& borrowOut)
+        : RippleBorrowSubtractor(a.data(), b.data(), borrowIn, difference.data(), borrowOut)
+    {
+    }
+
+    RippleBorrowSubtractor(Bus<N>& a,
+                           Bus<N>& b,
+                           Wire& borrowIn,
+                           Bus<N>& difference,
+                           Wire& borrowOut)
+        : RippleBorrowSubtractor(&a[0], &b[0], borrowIn, &difference[0], borrowOut)
+    {
+    }
+
+    void evaluate() noexcept override
+    {
+        for (auto& subtractor : m_fullSubtractors)
+        {
+            if (subtractor)
+            {
+                subtractor->evaluate();
+            }
+        }
+    }
+
+private:
+    RippleBorrowSubtractor(Wire* a,
+                           Wire* b,
+                           Wire& borrowIn,
+                           Wire* difference,
                            Wire& borrowOut)
     {
         static_assert(N > 0, "RippleBorrowSubtractor must have at least one bit.");
@@ -72,19 +103,6 @@ public:
             difference[N - 1],
             borrowOut);
     }
-
-    void evaluate()
-    {
-        for (auto& subtractor : m_fullSubtractors)
-        {
-            if (subtractor)
-            {
-                subtractor->evaluate();
-            }
-        }
-    }
-
-private:
     // Internal borrow wires
     std::array<Wire, (N > 1 ? N - 1 : 0)> m_borrows;
 

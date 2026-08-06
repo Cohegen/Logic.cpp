@@ -48,7 +48,7 @@ public:
     }
 
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         // Generate NOT A
         not_gate.evaluate();

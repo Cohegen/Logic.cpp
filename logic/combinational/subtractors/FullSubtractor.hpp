@@ -40,7 +40,7 @@ public:
     }
 
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         m_sub1.evaluate();
         m_sub2.evaluate();

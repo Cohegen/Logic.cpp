@@ -4,8 +4,9 @@ An implementation of binary counter
 
 #pragma once
 
+#include <array>
 #include <cstddef>
-#include <vector>
+#include <utility>
 
 #include "simulator/Component.hpp"
 #include "combinational/adders/RippleCarryAdder.hpp"
@@ -31,16 +32,11 @@ namespace logic {
             reset_(reset),
             count_(count),
             clock_wire_(clock.state()),
-            reg_(reg_input_, clock_wire_, count_),
-            r_adder_(count_, constant_one_, carry_in_, adder_next_, carry_out_)
+            r_adder_(count_, constant_one_, carry_in_, adder_next_, carry_out_),
+            enable_muxes_(make_enable_muxes(std::make_index_sequence<N>{})),
+            reset_muxes_(make_reset_muxes(std::make_index_sequence<N>{})),
+            reg_(reg_input_, clock_wire_, count_)
         {
-            muxes_.reserve(2 * N);
-            for (std::size_t i = 0; i < N; ++i) {
-                // Selects count_[i] when enable=0, adder_next_[i] when enable=1
-                muxes_.emplace_back(count_[i], adder_next_[i], enable_, count_next_[i]);
-                // Selects count_next_[i] when reset=0, LOW when reset=1
-                muxes_.emplace_back(count_next_[i], zero_wire_, reset_, reg_input_[i]);
-            }
             // Set up constant 1 for adder input
             constant_one_[0].write(LogicState::HIGH);
             for (std::size_t i = 1; i < N; ++i) {
@@ -63,12 +59,13 @@ namespace logic {
             // Computing count + 1 using adder
             r_adder_.evaluate();
 
-            // Passing outputs through enable & reset multiplexers
-            for (auto& mux : muxes_) {
-                mux.evaluate();
+            // Passing outputs through enable and reset multiplexers
+            for (std::size_t i = 0; i < N; ++i) {
+                enable_muxes_[i].evaluate();
+                reset_muxes_[i].evaluate();
             }
 
-            // Clocking update on register
+            // Clock update on register
             reg_.evaluate();
         }
 
@@ -89,8 +86,21 @@ namespace logic {
         Bus<N> reg_input_;
 
         RippleCarryAdder<N> r_adder_;
-        std::vector<Mux2to1> muxes_;
+        std::array<Mux2to1, N> enable_muxes_;
+        std::array<Mux2to1, N> reset_muxes_;
         Register<N> reg_;
+
+        template<std::size_t... I>
+        std::array<Mux2to1, N> make_enable_muxes(std::index_sequence<I...>)
+        {
+            return {Mux2to1(count_[I], adder_next_[I], enable_, count_next_[I])...};
+        }
+
+        template<std::size_t... I>
+        std::array<Mux2to1, N> make_reset_muxes(std::index_sequence<I...>)
+        {
+            return {Mux2to1(count_next_[I], zero_wire_, reset_, reg_input_[I])...};
+        }
     };
 }
 
