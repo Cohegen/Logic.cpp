@@ -43,7 +43,7 @@ public:
         }
     }
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         // 1. Evaluate per-bit comparators
         for (auto& comp : m_bitComps)

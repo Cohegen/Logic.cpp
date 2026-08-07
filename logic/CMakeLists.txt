@@ -64,4 +64,22 @@ target_link_libraries(test_binary_counter
         logic
 )
 
+add_executable(test_up_down_counter
+    examples/test_up_down_counter.cpp
+)
+
+target_link_libraries(test_up_down_counter
+    PRIVATE
+        logic
+)
+
+add_executable(test_modulo_counter
+    examples/test_modulo_counter.cpp
+)
+
+target_link_libraries(test_modulo_counter
+    PRIVATE
+        logic
+)
+
 

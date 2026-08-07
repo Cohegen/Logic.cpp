@@ -19,7 +19,7 @@ public:
           m_andGreater(a, m_invB, greater),
           m_andLess(m_invA, b, less) {}
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         m_notA.evaluate();
         m_notB.evaluate();
