@@ -82,4 +82,22 @@ target_link_libraries(test_modulo_counter
         logic
 )
 
+add_executable(test_johnson_counter
+    examples/test_johnson_counter.cpp
+)
+
+target_link_libraries(test_johnson_counter
+    PRIVATE
+        logic
+)
+
+add_executable(test_ring_counter
+    examples/test_ring_counter.cpp
+)
+
+target_link_libraries(test_ring_counter
+    PRIVATE
+        logic
+)
+
 
