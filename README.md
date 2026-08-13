@@ -1,6 +1,6 @@
 # Logic.cpp
 
-![out:](assets/logo.png)
+![out:](assets/logo2.png)
 
 Logic.cpp is a C++20 hardware-simulation library for building digital logic systems from small, reusable components. It models signals, wires, gates, combinational circuits, sequential circuits, memory blocks, and simulation utilities so larger computer architecture projects can be assembled from the same lower-level building blocks used in digital design.
 
