@@ -1,51 +1,89 @@
 # Logic.cpp
 
-![out:](assets/logo2.png)
+![Logic.cpp Logo](assets/logo2.png)
 
-Logic.cpp is a C++20 hardware-simulation library for building digital logic systems from small, reusable components. It models signals, wires, gates, combinational circuits, sequential circuits, memory blocks, and simulation utilities so larger computer architecture projects can be assembled from the same lower-level building blocks used in digital design.
+`Logic.cpp` is a modern C++20 hardware simulation library designed for modeling, prototyping, and simulating digital logic circuits from fundamental electrical primitives to complex computer architecture components.
 
-The goal of Logic.cpp is to provide a practical foundation for experimenting with hardware concepts in C++. Instead of treating circuits as ordinary software calculations, the library is designed around explicit hardware-style components such as gates, adders, subtractors, multiplexers, latches, flip-flops, registers, counters, buses, RAM, ROM, and control units. These components can then be composed into larger systems, including external projects such as CPU simulators.
+It models wires, buses, gates, combinational datapaths, sequential storage, memory structures, tri-state bus drivers, and simulation infrastructure—allowing higher-level computer architecture projects (such as `CPU.cpp`) to be built cleanly from modular hardware building blocks.
 
-## Project Goals
+---
 
-- Model digital hardware concepts using clear C++ components.
-- Make combinational and sequential circuits reusable across projects.
-- Support CPU and computer architecture experiments without duplicating logic components.
-- Keep the design close to hardware structure, where larger modules are built from smaller modules.
-- Provide examples and tests that show how each component behaves.
+## Key Hardware Subsystems & Components
 
-## Current Scope
-
-Logic.cpp currently includes core signal types, gates, arithmetic components, bitwise units, multiplexers, latches, flip-flops, registers, counters, memory components, and simulator infrastructure. The project is still under active development, so some APIs and examples may change as the component library grows.
-
-## Build
-
-This project uses CMake.
-
-Prerequisites:
-
-- CMake 3.20 or newer
-- A C++ compiler toolchain such as MSVC Build Tools, MinGW-w64, or Clang
-
-```powershell
-cmake --preset default
-cmake --build --preset default
+```
+logic/
+├── signals/        # Wires, Buses, Clocks, LogicState, TriStateBuffer, BusDriver
+├── gates/          # Primitive logic gates (AND, OR, NOT, NAND, NOR, XOR, XNOR, BUFFER)
+├── combinational/  # Memoryless digital circuits
+│   ├── adders/       # HalfAdder, FullAdder, RippleCarryAdder
+│   ├── subtractors/  # HalfSubtractor, FullSubtractor
+│   ├── alu/          # Multi-function ALU with status flags (Z, C, V, N)
+│   ├── multiplexers/ # Mux (2:1 to N:1) and Demux (1:2 to 1:N)
+│   ├── decoders/     # Binary Line Decoders (2:4, 3:8)
+│   ├── encoders/     # Encoder (4:2) and PriorityEncoder
+│   ├── shifters/     # Logical Left/Right, Arithmetic Right, BarrelShifter
+│   ├── extenders/    # ZeroExtender, SignExtender
+│   ├── bit_operations/ # BitSelector, BitSlice
+│   ├── comparators/  # Bit and Magnitude Comparators
+│   └── bitwise/      # Bus-wide bitwise operation units
+├── sequential/     # Synchronous and stateful storage components
+│   ├── latches/      # SR, Gated-SR, D-Latches
+│   ├── flipflops/    # D, SR, JK, T Flip-Flops
+│   ├── registers/    # Parallel Registers, Shift Registers (SISO, SIPO, PISO, PIPO)
+│   ├── counters/     # Ripple, Binary, Up/Down, Modulo, Ring, Johnson Counters
+│   └── memory/       # RegisterFile (Dual-Read), ROM, RAM, MemoryController, Memory
+└── simulator/      # Time tracking and signal propagation simulation engine
 ```
 
-## Run
+---
 
-On Windows CMake generators such as Visual Studio usually place the executable under `build\Debug`:
+## Features
+
+- **4-State Logic System**: Supports `LOW` (`0`), `HIGH` (`1`), `UNDEFINED` (`X`), and `HIGH_IMPEDANCE` (`Z`) for modeling tri-state buses and bus contention.
+- **Hardware-Centric Composition**: Components inherit from `logic::Component` and evaluate signals via `evaluate() noexcept`.
+- **Flexible Data Paths**: Templated buses (`Bus<N>`) supporting arithmetic, logical shifting, sign extension, bit slicing, and priority encoding.
+- **Consumable Library**: Easily linkable into sibling CMake projects (`CPU.cpp`) as an interface/static library (`target_link_libraries(my_target PRIVATE logic)`).
+
+---
+
+## Build Instructions
+
+This project uses **CMake 3.20+** and requires a C++20 compatible compiler toolchain (MSVC, GCC, Clang).
 
 ```powershell
-.\build\Debug\logic_cpp.exe
+# Configure CMake build
+cmake -B build -S . -DLOGIC_BUILD_EXAMPLES=ON
+
+# Build all targets and tests
+cmake --build build
 ```
 
-Single-configuration generators place it directly under `build`:
+---
+
+## Running Unit Tests
+
+Run the built unit test executables (located in the `build` directory):
 
 ```powershell
-.\build\logic_cpp.exe
+# Run expanded component tests (Shifters, Extenders, Encoders, Bus Drivers, Bit Operations)
+.\build\test_expanded_components.exe
+
+# Run memory subsystem tests
+.\build\test_memory.exe
+
+# Run counter subsystem tests
+.\build\test_binary_counter.exe
 ```
 
-## Note
+---
 
-Work is still underway, so this project is not complete.
+## Integration in External Projects
+
+To consume `Logic.cpp` inside sibling projects (e.g. `CPU.cpp`):
+
+```cmake
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Logic.cpp ${CMAKE_CURRENT_BINARY_DIR}/logic_build)
+
+add_executable(cpu_simulator main.cpp)
+target_link_libraries(cpu_simulator PRIVATE logic)
+```
