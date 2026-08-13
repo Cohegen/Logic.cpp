@@ -155,4 +155,13 @@ target_link_libraries(test_memory
     PRIVATE
         logic
 )
+
+add_executable(test_expanded_components
+    examples/test_expanded_components.cpp
+)
+
+target_link_libraries(test_expanded_components
+    PRIVATE
+        logic
+)
 endif()

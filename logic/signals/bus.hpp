@@ -16,6 +16,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <stdexcept>
 
 #include "signals/wire.hpp"
@@ -157,6 +158,30 @@ public:
         {
             wire.write(state);
         }
+    }
+
+    /// Set bus from numeric value
+    void write_value(std::uint64_t val)
+    {
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            m_wires[i].write(((val >> i) & 1) ? LogicState::HIGH : LogicState::LOW);
+        }
+    }
+
+    /// Read bus as numeric value
+    [[nodiscard]]
+    std::uint64_t read_value() const
+    {
+        std::uint64_t result = 0;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            if (m_wires[i].read() == LogicState::HIGH)
+            {
+                result |= (static_cast<std::uint64_t>(1) << i);
+            }
+        }
+        return result;
     }
 
     /// Reset all wires to LOW
