@@ -77,6 +77,8 @@ Run the built unit test executables (located in the `build` directory):
 
 ---
 
+# NOTE: CPU.cpp is currently under development so it's not advisable to perform the instruction below
+
 ## Integration in External Projects
 
 To consume `Logic.cpp` inside sibling projects (e.g. `CPU.cpp`):
@@ -87,3 +89,4 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Logic.cpp ${CMAKE_CURRENT_BINARY
 add_executable(cpu_simulator main.cpp)
 target_link_libraries(cpu_simulator PRIVATE logic)
 ```
+
