@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cassert>
 
-#include "signals/wire.hpp"
-#include "signals/bus.hpp"
-#include "signals/clock.hpp"
-#include "signals/logicState.hpp"
-#include "sequential/counters/ModuloCounter.hpp"
+#include <logic/signals/wire.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/clock.hpp>
+#include <logic/signals/logicState.hpp>
+#include <logic/sequential/counters/ModuloCounter.hpp>
 
 using logic::Wire;
 using logic::Bus;

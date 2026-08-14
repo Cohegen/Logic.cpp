@@ -2,10 +2,10 @@
 #include <cassert>
 #include <vector>
 
-#include "signals/wire.hpp"
-#include "signals/bus.hpp"
-#include "signals/logicState.hpp"
-#include "sequential/registers/ShiftRegisterPISO.hpp"
+#include <logic/signals/wire.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/logicState.hpp>
+#include <logic/sequential/registers/ShiftRegisterPISO.hpp>
 
 using logic::Wire;
 using logic::Bus;

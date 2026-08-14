@@ -3,11 +3,11 @@
 #include <iostream>
 #include <vector>
 
-#include "sequential/memory/Memory.hpp"
-#include "signals/bus.hpp"
-#include "signals/clock.hpp"
-#include "signals/wire.hpp"
-#include "signals/logicState.hpp"
+#include <logic/sequential/memory/Memory.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/clock.hpp>
+#include <logic/signals/wire.hpp>
+#include <logic/signals/logicState.hpp>
 
 using namespace logic;
 

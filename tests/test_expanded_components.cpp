@@ -1,18 +1,18 @@
-#include "combinational/shifters/LogicalLeftShifter.hpp"
-#include "combinational/shifters/LogicalRightShifter.hpp"
-#include "combinational/shifters/ArithmeticRightShifter.hpp"
-#include "combinational/shifters/BarrelShifter.hpp"
+#include <logic/combinational/shifters/LogicalLeftShifter.hpp>
+#include <logic/combinational/shifters/LogicalRightShifter.hpp>
+#include <logic/combinational/shifters/ArithmeticRightShifter.hpp>
+#include <logic/combinational/shifters/BarrelShifter.hpp>
 
-#include "combinational/extenders/ZeroExtender.hpp"
-#include "combinational/extenders/SignExtender.hpp"
+#include <logic/combinational/extenders/ZeroExtender.hpp>
+#include <logic/combinational/extenders/SignExtender.hpp>
 
-#include "combinational/encoders/Encoder.hpp"
-#include "combinational/encoders/PriorityEncoder.hpp"
+#include <logic/combinational/encoders/Encoder.hpp>
+#include <logic/combinational/encoders/PriorityEncoder.hpp>
 
-#include "combinational/bit_operations/BitSelector.hpp"
-#include "combinational/bit_operations/BitSlice.hpp"
+#include <logic/combinational/bit_operations/BitSelector.hpp>
+#include <logic/combinational/bit_operations/BitSlice.hpp>
 
-#include "signals/BusDriver.hpp"
+#include <logic/signals/BusDriver.hpp>
 
 #include <iostream>
 #include <cassert>

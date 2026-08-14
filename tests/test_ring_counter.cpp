@@ -2,11 +2,11 @@
 #include <cassert>
 #include <vector>
 
-#include "signals/wire.hpp"
-#include "signals/bus.hpp"
-#include "signals/clock.hpp"
-#include "signals/logicState.hpp"
-#include "sequential/counters/RingCounter.hpp"
+#include <logic/signals/wire.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/clock.hpp>
+#include <logic/signals/logicState.hpp>
+#include <logic/sequential/counters/RingCounter.hpp>
 
 using logic::Wire;
 using logic::Bus;

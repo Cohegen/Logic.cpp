@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-#include "sequential/memory/ROM.hpp"
-#include "signals/bus.hpp"
-#include "signals/wire.hpp"
-#include "signals/logicState.hpp"
+#include <logic/sequential/memory/ROM.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/wire.hpp>
+#include <logic/signals/logicState.hpp>
 
 using namespace logic;
 

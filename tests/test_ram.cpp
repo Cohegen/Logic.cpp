@@ -1,11 +1,11 @@
 #include <cassert>
 #include <iostream>
 
-#include "sequential/memory/RAM.hpp"
-#include "signals/bus.hpp"
-#include "signals/clock.hpp"
-#include "signals/wire.hpp"
-#include "signals/logicState.hpp"
+#include <logic/sequential/memory/RAM.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/clock.hpp>
+#include <logic/signals/wire.hpp>
+#include <logic/signals/logicState.hpp>
 
 using namespace logic;
 

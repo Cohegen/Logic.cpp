@@ -2,10 +2,10 @@
 #include <cstdint>
 #include <iostream>
 
-#include "sequential/memory/MemoryController.hpp"
-#include "signals/bus.hpp"
-#include "signals/wire.hpp"
-#include "signals/logicState.hpp"
+#include <logic/sequential/memory/MemoryController.hpp>
+#include <logic/signals/bus.hpp>
+#include <logic/signals/wire.hpp>
+#include <logic/signals/logicState.hpp>
 
 using namespace logic;
 
