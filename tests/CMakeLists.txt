@@ -1,3 +1,9 @@
+add_executable(test_gates_and_adders test_gates_and_adders.cpp)
+target_link_libraries(test_gates_and_adders PRIVATE logic::logic)
+
+add_executable(test_alu test_alu.cpp)
+target_link_libraries(test_alu PRIVATE logic::logic)
+
 add_executable(test_piso test_piso.cpp)
 target_link_libraries(test_piso PRIVATE logic::logic)
 
