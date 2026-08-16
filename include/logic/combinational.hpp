@@ -11,6 +11,7 @@
 #include "combinational/multiplexers/Mux2to1.hpp"
 #include "combinational/multiplexers/Mux4to1.hpp"
 #include "combinational/multiplexers/Mux8to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 #include "combinational/decoders/Dec2to4.hpp"
 #include "combinational/bitwise/bitwiseAnd.hpp"
 #include "combinational/bitwise/BitwiseOr.hpp"

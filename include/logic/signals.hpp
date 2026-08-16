@@ -1,6 +1,6 @@
 #pragma once
 
-#include "signals/logicState.hpp"
-#include "signals/signal.hpp"
-#include "signals/wire.hpp"
-#include "signals/bus.hpp"
+#include "logic/signals/logicState.hpp"
+#include "logic/signals/signal.hpp"
+#include "logic/signals/wire.hpp"
+#include "logic/signals/bus.hpp"

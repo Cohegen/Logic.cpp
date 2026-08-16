@@ -13,9 +13,35 @@
 #include <logic/combinational/bit_operations/BitSlice.hpp>
 
 #include <logic/signals/BusDriver.hpp>
+#include <logic/combinational/multiplexers/Mux.hpp>
 
 #include <iostream>
 #include <cassert>
+
+void test_bus_mux()
+{
+    std::cout << "--- Testing 32-bit Bus Mux (Mux<32>) ---\n";
+
+    logic::Bus<32> busA, busB, busOut;
+    logic::Wire select;
+
+    logic::Mux<32> mux32(busA, busB, select, busOut);
+
+    busA.write_value(0x12345678);
+    busB.write_value(0xABCDEF01);
+
+    // Select = 0 -> output should be busA
+    select.write(logic::LogicState::LOW);
+    mux32.evaluate();
+    assert(busOut.read_value() == 0x12345678);
+
+    // Select = 1 -> output should be busB
+    select.write(logic::LogicState::HIGH);
+    mux32.evaluate();
+    assert(busOut.read_value() == 0xABCDEF01);
+
+    std::cout << "[PASS] 32-bit Bus Mux Tests\n\n";
+}
 
 void test_shifters()
 {
@@ -177,6 +203,7 @@ int main()
     std::cout << " Running Logic.cpp Expanded Unit Tests \n";
     std::cout << "=======================================\n\n";
 
+    test_bus_mux();
     test_shifters();
     test_extenders();
     test_encoders();

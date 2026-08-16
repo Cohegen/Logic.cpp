@@ -19,7 +19,7 @@
 #include "simulator/Component.hpp"
 #include "sequential/registers/register.hpp"
 #include "gates/AND.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 
 namespace logic {
 
@@ -58,6 +58,7 @@ public:
         gated_clocks_.resize(NumRegisters);
         write_enable_ands_.reserve(NumRegisters);
         clock_gating_ands_.reserve(NumRegisters);
+        reset_muxes_.reserve(NumRegisters);
 
         // Instantiate per-register write gating, reset muxing, and registers
         for (std::size_t i = 0; i < NumRegisters; ++i) {
@@ -75,18 +76,13 @@ public:
                 gated_clocks_[i]
             );
 
-            // Mux vector per register for reset / write data routing
-            std::vector<Mux2to1> muxes;
-            muxes.reserve(DataWidth);
-            for (std::size_t j = 0; j < DataWidth; ++j) {
-                muxes.emplace_back(
-                    write_data_[j],
-                    zero_wire_,
-                    reset_,
-                    reg_inputs_[i][j]
-                );
-            }
-            reset_muxes_.push_back(std::move(muxes));
+            // Mux instance per register for reset / write data routing
+            reset_muxes_.emplace_back(
+                write_data_,
+                zero_bus_,
+                reset_,
+                reg_inputs_[i]
+            );
 
             // Register instance for register i
             registers_.emplace_back(
@@ -100,7 +96,6 @@ public:
     void evaluate() noexcept override
     {
         clock_wire_.write(clock_.state());
-        zero_wire_.write(LogicState::LOW);
 
         // 1. Decode write address bus into one-hot write_select_ signals
         std::size_t w_idx = get_bus_index(write_addr_);
@@ -117,11 +112,7 @@ public:
             }
 
             clock_gating_ands_[i].evaluate();
-
-            for (std::size_t j = 0; j < DataWidth; ++j) {
-                reset_muxes_[i][j].evaluate();
-            }
-
+            reset_muxes_[i].evaluate();
             registers_[i].evaluate();
         }
 
@@ -148,18 +139,18 @@ private:
     Bus<DataWidth>& read_data2_;
 
     Wire clock_wire_;
-    Wire zero_wire_{LogicState::LOW};
 
     std::array<Wire, NumRegisters> write_select_;
     std::vector<Wire> word_write_enables_;
     std::vector<Wire> gated_clocks_;
 
+    Bus<DataWidth> zero_bus_;
     std::vector<Bus<DataWidth>> reg_inputs_;
     std::vector<Bus<DataWidth>> reg_outputs_;
 
     std::vector<ANDGate> write_enable_ands_;
     std::vector<ANDGate> clock_gating_ands_;
-    std::vector<std::vector<Mux2to1>> reset_muxes_;
+    std::vector<Mux<DataWidth>> reset_muxes_;
     std::vector<Register<DataWidth>> registers_;
 
     template <std::size_t Width>

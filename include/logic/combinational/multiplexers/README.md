@@ -14,7 +14,7 @@ A Multiplexer routes one of $2^S$ data input lines to a single output line based
 | `Mux2to1` | 2 | 1 | 1 |
 | `Mux4to1` | 4 | 2 | 1 |
 | `Mux8to1` | 8 | 3 | 1 |
-| `MuxNto1<N>` | $N = 2^S$ | $S$ | 1 |
+| `Mux<N>` | 2 (buses of size N) | 1 | 1 (bus of size N) |
 
 #### Mux Boolean Equation (2:1)
 $$Y = (\bar{S} \cdot I_0) + (S \cdot I_1)$$

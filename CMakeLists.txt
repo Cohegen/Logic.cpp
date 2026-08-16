@@ -27,6 +27,7 @@ target_compile_features(logic
 target_include_directories(logic
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/logic>
         $<INSTALL_INTERFACE:include>
 )
 

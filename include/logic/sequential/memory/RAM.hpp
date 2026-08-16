@@ -13,7 +13,7 @@
 #include "sequential/registers/register.hpp"
 #include "gates/AND.hpp"
 #include "gates/NOT.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 
 namespace logic {
 
@@ -39,7 +39,8 @@ public:
         write_enable_(write_enable),
         address_(address),
         write_data_(write_data),
-        read_data_(read_data)
+        read_data_(read_data),
+        read_mux_(selected_data_, zero_bus_, read_enable_inv_, read_data_)
     {
         registers_.reserve(NumWords);
         reg_inputs_.resize(NumWords);
@@ -48,6 +49,7 @@ public:
         gated_clocks_.resize(NumWords);
         write_enable_ands_.reserve(NumWords);
         clock_gating_ands_.reserve(NumWords);
+        reset_muxes_.reserve(NumWords);
 
         // Instantiate per-word write enable logic, gated clocks, and registers
         for (std::size_t i = 0; i < NumWords; ++i) {
@@ -65,18 +67,13 @@ public:
                 gated_clocks_[i]
             );
 
-            // Mux array for resetting or feeding write_data_ into register inputs
-            std::vector<Mux2to1> muxes;
-            muxes.reserve(DataWidth);
-            for (std::size_t j = 0; j < DataWidth; ++j) {
-                muxes.emplace_back(
-                    write_data_[j],
-                    zero_wire_,
-                    reset_,
-                    reg_inputs_[i][j]
-                );
-            }
-            reset_muxes_.push_back(std::move(muxes));
+            // Mux instance per word for resetting or feeding write_data_ into register inputs
+            reset_muxes_.emplace_back(
+                write_data_,
+                zero_bus_,
+                reset_,
+                reg_inputs_[i]
+            );
 
             // Register instance for word i
             registers_.emplace_back(
@@ -85,23 +82,11 @@ public:
                 memory_words_[i]
             );
         }
-
-        // Output multiplexer array for read_data_
-        read_muxes_.reserve(DataWidth);
-        for (std::size_t j = 0; j < DataWidth; ++j) {
-            read_muxes_.emplace_back(
-                selected_data_[j],
-                zero_wire_,
-                read_enable_inv_,
-                read_data_[j]
-            );
-        }
     }
 
     void evaluate() noexcept override
     {
         clock_wire_.write(clock_.state());
-        zero_wire_.write(LogicState::LOW);
 
         // 1. Decode address bus into 1-of-N word select signals
         decode_address();
@@ -116,11 +101,7 @@ public:
             }
 
             clock_gating_ands_[i].evaluate();
-
-            for (std::size_t j = 0; j < DataWidth; ++j) {
-                reset_muxes_[i][j].evaluate();
-            }
-
+            reset_muxes_[i].evaluate();
             registers_[i].evaluate();
         }
 
@@ -130,11 +111,9 @@ public:
             selected_data_[j].write(memory_words_[selected_index][j].read());
         }
 
-        // 4. Output read data gated by read_enable
+        // 4. Output read data gated by read_enable via Mux<DataWidth>
         read_enable_not_.evaluate();
-        for (std::size_t j = 0; j < DataWidth; ++j) {
-            read_muxes_[j].evaluate();
-        }
+        read_mux_.evaluate();
     }
 
 private:
@@ -149,7 +128,6 @@ private:
 
     // Internal signals
     Wire clock_wire_;
-    Wire zero_wire_{LogicState::LOW};
     Wire read_enable_inv_;
     NotGate read_enable_not_{read_enable_, read_enable_inv_};
 
@@ -157,6 +135,7 @@ private:
     std::vector<Wire> word_write_enables_;
     std::vector<Wire> gated_clocks_;
 
+    Bus<DataWidth> zero_bus_;
     std::vector<Bus<DataWidth>> reg_inputs_;
     std::vector<Bus<DataWidth>> memory_words_;
     Bus<DataWidth> selected_data_;
@@ -164,9 +143,9 @@ private:
     // Gates & Sub-components
     std::vector<ANDGate> write_enable_ands_;
     std::vector<ANDGate> clock_gating_ands_;
-    std::vector<std::vector<Mux2to1>> reset_muxes_;
+    std::vector<Mux<DataWidth>> reset_muxes_;
     std::vector<Register<DataWidth>> registers_;
-    std::vector<Mux2to1> read_muxes_;
+    Mux<DataWidth> read_mux_;
 
     // Helper: decode binary address bus into one-hot word_select_
     void decode_address() noexcept
@@ -190,4 +169,4 @@ private:
     }
 };
 
-} 
+} // namespace logic

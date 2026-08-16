@@ -5,7 +5,7 @@ From digital design we know that a signal can be either high or low on a wire
 
 #pragma once
 
-#include "signals/logicState.hpp"
+#include "logic/signals/logicState.hpp"
 
 namespace logic
 {

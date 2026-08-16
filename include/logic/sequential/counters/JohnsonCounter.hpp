@@ -9,7 +9,7 @@ An implementation of a Johnson counter
 
 #include "simulator/Component.hpp"
 #include "gates/NOT.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "sequential/registers/register.hpp"
@@ -40,10 +40,10 @@ An implementation of a Johnson counter
  *    - `In0 = count[i]` (Hold state when enable = 0)
  *    - `In1 = shifted_count[i]` (Next shifted state when enable = 1)
  *    - `Out = count_next[i]`
- * 4. **Synchronous Reset Multiplexers (`reset_muxes_`)**:
+ * 4. **Synchronous Reset Multiplexers (`reset_mux_`)**:
  *    - `S = reset`
  *    - `In0 = count_next[i]` (Normal count/hold state when reset = 0)
- *    - `In1 = zero_wire_` (Force LOW when reset = 1)
+ *    - `In1 = zero_bus_` (Force LOW when reset = 1)
  *    - `Out = reg_input[i]`
  * 5. **N-bit Register (`reg_`)**:
  *    Latches `reg_input` to `count` on active clock edge evaluation.
@@ -67,17 +67,15 @@ namespace logic{
             reset_(reset),
             count_(count),
             clock_wire_(clock.state()),
-            zero_wire_(LogicState::LOW),
             feedback_(LogicState::LOW),
             shifted_count_(),
             count_next_(),
             reg_input_(),
             feedback_not_(count_[N - 1], feedback_),
-            enable_muxes_(make_enable_muxes(std::make_index_sequence<N>{})),
-            reset_muxes_(make_reset_muxes(std::make_index_sequence<N>{})),
+            enable_mux_(count_, shifted_count_, enable_, count_next_),
+            reset_mux_(count_next_, zero_bus_, reset_, reg_input_),
             reg_(reg_input_, clock_wire_, count_)
         {
-            zero_wire_.write(LogicState::LOW);
             feedback_.write(LogicState::LOW);
         }
 
@@ -85,7 +83,6 @@ namespace logic{
         {
              // Sync internal clock wire state
              clock_wire_.write(clock_.state());
-             zero_wire_.write(LogicState::LOW);
 
              // Evaluate inverted feedback from MSB count[N-1]
              feedback_not_.evaluate();
@@ -99,10 +96,8 @@ namespace logic{
              }
 
              // Select next state based on enable & reset control signals
-             for (std::size_t i = 0; i < N; ++i) {
-                enable_muxes_[i].evaluate();
-                reset_muxes_[i].evaluate();
-            }
+             enable_mux_.evaluate();
+             reset_mux_.evaluate();
 
             // Update state register
             reg_.evaluate();
@@ -116,33 +111,18 @@ namespace logic{
 
         // Internal wires and signals
         Wire clock_wire_;
-        Wire zero_wire_{LogicState::LOW};
         Wire feedback_{LogicState::LOW};
 
+        Bus<N> zero_bus_;
         Bus<N> shifted_count_;
         Bus<N> count_next_;
         Bus<N> reg_input_;
 
         // Internal hardware components
         NotGate feedback_not_;
-        std::array<Mux2to1, N> enable_muxes_;
-        std::array<Mux2to1, N> reset_muxes_;
+        Mux<N> enable_mux_;
+        Mux<N> reset_mux_;
         Register<N> reg_;
-
-        // Helper template to construct enable multiplexers
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_enable_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_[I], shifted_count_[I], enable_, count_next_[I])...};
-        }
-
-        // Helper template to construct reset multiplexers
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_reset_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_next_[I], zero_wire_, reset_, reg_input_[I])...};
-        }
-
     };
         
 }

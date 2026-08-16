@@ -21,7 +21,7 @@
 #include "simulator/Component.hpp"
 #include "combinational/adders/RippleCarryAdder.hpp"
 #include "combinational/comparators/Comparator.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "sequential/registers/register.hpp"
@@ -48,9 +48,9 @@ namespace logic {
             clock_wire_(clock.state()),
             r_adder_(count_, constant_one_, carry_in_, incremented_val_, carry_out_),
             comp_(incremented_val_, modulo_, equal_, greater_, less_),
-            wrap_muxes_(make_wrap_muxes(std::make_index_sequence<N>{})),
-            enable_muxes_(make_enable_muxes(std::make_index_sequence<N>{})),
-            reset_muxes_(make_reset_muxes(std::make_index_sequence<N>{})),
+            wrap_mux_(incremented_val_, zero_bus_, equal_, wrapped_next_),
+            enable_mux_(count_, wrapped_next_, enable_, count_next_),
+            reset_mux_(count_next_, zero_bus_, reset_, reg_input_),
             reg_(reg_input_, clock_wire_, count_)
         {
             constant_one_[0].write(LogicState::HIGH);
@@ -60,7 +60,6 @@ namespace logic {
             }
             zero_bus_[0].write(LogicState::LOW);
             carry_in_.write(LogicState::LOW);
-            zero_wire_.write(LogicState::LOW);
         }
 
         void evaluate() noexcept override
@@ -75,7 +74,6 @@ namespace logic {
             }
             zero_bus_[0].write(LogicState::LOW);
             carry_in_.write(LogicState::LOW);
-            zero_wire_.write(LogicState::LOW);
 
             // computing count + 1 with ripple carry adder
             r_adder_.evaluate();
@@ -84,11 +82,9 @@ namespace logic {
             comp_.evaluate();
 
             // evaluate multiplexers
-            for (std::size_t i = 0; i < N; ++i) {
-                wrap_muxes_[i].evaluate();
-                enable_muxes_[i].evaluate();
-                reset_muxes_[i].evaluate();
-            }
+            wrap_mux_.evaluate();
+            enable_mux_.evaluate();
+            reset_mux_.evaluate();
 
             reg_.evaluate();
         }
@@ -103,7 +99,6 @@ namespace logic {
         Wire clock_wire_;
         Wire carry_in_{LogicState::LOW};
         Wire carry_out_{LogicState::LOW};
-        Wire zero_wire_{LogicState::LOW};
         Wire equal_{LogicState::LOW};
         Wire greater_{LogicState::LOW};
         Wire less_{LogicState::LOW};
@@ -120,30 +115,9 @@ namespace logic {
         Comparator<N> comp_;
 
         // Internal multiplexers
-        std::array<Mux2to1, N> wrap_muxes_;
-        std::array<Mux2to1, N> enable_muxes_;
-        std::array<Mux2to1, N> reset_muxes_;
+        Mux<N> wrap_mux_;
+        Mux<N> enable_mux_;
+        Mux<N> reset_mux_;
         Register<N> reg_;
-
-        // Constructing the wrap muxes
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_wrap_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(incremented_val_[I], zero_bus_[I], equal_, wrapped_next_[I])...};
-        }
-
-        // Constructing the enable muxes
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_enable_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_[I], wrapped_next_[I], enable_, count_next_[I])...};
-        }
-
-        // Constructing the reset muxes
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_reset_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_next_[I], zero_bus_[I], reset_, reg_input_[I])...};
-        }
     };
 }

@@ -69,7 +69,7 @@
 #include <utility>
 
 #include "simulator/Component.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "sequential/registers/register.hpp"
@@ -96,8 +96,8 @@ namespace logic {
             shifted_count_(),
             initial_state_(),
             reg_input_(),
-            enable_muxes_(make_enable_muxes(std::make_index_sequence<N>{})),
-            reset_muxes_(make_reset_muxes(std::make_index_sequence<N>{})),
+            enable_mux_(count_, shifted_count_, enable_, count_next_),
+            reset_mux_(count_next_, initial_state_, reset_, reg_input_),
             reg_(reg_input_, clock_wire_, count_)
         {
             // Initializing initial state constant to one-hot value 000...0001
@@ -124,11 +124,9 @@ namespace logic {
                 shifted_count_[i].write(count_[i - 1].read());
             }
 
-            // Datapath Step 2 & 3: Evaluate multiplexer arrays (Enable and Reset)
-            for (std::size_t i = 0; i < N; ++i) {
-                enable_muxes_[i].evaluate();
-                reset_muxes_[i].evaluate();
-            }
+            // Datapath Step 2 & 3: Evaluate multiplexer components (Enable and Reset)
+            enable_mux_.evaluate();
+            reset_mux_.evaluate();
 
             // Datapath Step 4: Clock update on storage register
             reg_.evaluate();
@@ -149,23 +147,9 @@ namespace logic {
         Bus<N> reg_input_;
 
         // Internal Hardware Components
-        std::array<Mux2to1, N> enable_muxes_;
-        std::array<Mux2to1, N> reset_muxes_;
+        Mux<N> enable_mux_;
+        Mux<N> reset_mux_;
         Register<N> reg_;
-
-        // Helper template to construct enable multiplexers
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_enable_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_[I], shifted_count_[I], enable_, count_next_[I])...};
-        }
-
-        // Helper template to construct reset multiplexers
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_reset_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_next_[I], initial_state_[I], reset_, reg_input_[I])...};
-        }
     };
 
 } 

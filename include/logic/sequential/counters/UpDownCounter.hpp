@@ -21,7 +21,7 @@
 #include "simulator/Component.hpp"
 #include "combinational/subtractors/RippleBorrowSubtractor.hpp"
 #include "combinational/adders/RippleCarryAdder.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "sequential/registers/register.hpp"
@@ -47,9 +47,9 @@ namespace logic {
             clock_wire_(clock.state()),
             r_adder_(count_, constant_one_, carry_in_, increment_next_, carry_out_),
             r_subs_(count_, constant_one_, borrow_in_, decrement_next_, borrow_out_),
-            direction_muxes_(make_direction_muxes(std::make_index_sequence<N>{})),
-            enable_muxes_(make_enable_muxes(std::make_index_sequence<N>{})),
-            reset_muxes_(make_reset_muxes(std::make_index_sequence<N>{})),
+            direction_mux_(decrement_next_, increment_next_, direction_, direction_next_),
+            enable_mux_(count_, direction_next_, enable_, count_next_),
+            reset_mux_(count_next_, zero_bus_, reset_, reg_input_),
             reg_(reg_input_, clock_wire_, count_)
         {
             constant_one_[0].write(LogicState::HIGH);
@@ -58,7 +58,6 @@ namespace logic {
             }
             carry_in_.write(LogicState::LOW);
             borrow_in_.write(LogicState::LOW);
-            zero_wire_.write(LogicState::LOW);
         }
 
         void evaluate() noexcept override
@@ -72,7 +71,6 @@ namespace logic {
             }
             carry_in_.write(LogicState::LOW);
             borrow_in_.write(LogicState::LOW);
-            zero_wire_.write(LogicState::LOW);
 
             // computing count + 1 using ripple carry adder
             r_adder_.evaluate();
@@ -80,11 +78,9 @@ namespace logic {
             // computing count - 1 using ripple borrow subtractor
             r_subs_.evaluate();
 
-            for (std::size_t i = 0; i < N; ++i) {
-                direction_muxes_[i].evaluate();
-                enable_muxes_[i].evaluate();
-                reset_muxes_[i].evaluate();
-            }
+            direction_mux_.evaluate();
+            enable_mux_.evaluate();
+            reset_mux_.evaluate();
 
             reg_.evaluate();
         }
@@ -101,9 +97,9 @@ namespace logic {
         Wire carry_out_{LogicState::LOW};
         Wire borrow_in_{LogicState::LOW};
         Wire borrow_out_{LogicState::LOW};
-        Wire zero_wire_{LogicState::LOW};
 
         Bus<N> constant_one_;
+        Bus<N> zero_bus_;
         Bus<N> decrement_next_;
         Bus<N> increment_next_;
         Bus<N> count_next_;
@@ -115,30 +111,9 @@ namespace logic {
         RippleBorrowSubtractor<N> r_subs_;
 
         // Internal multiplexers
-        std::array<Mux2to1, N> direction_muxes_;
-        std::array<Mux2to1, N> enable_muxes_;
-        std::array<Mux2to1, N> reset_muxes_;
+        Mux<N> direction_mux_;
+        Mux<N> enable_mux_;
+        Mux<N> reset_mux_;
         Register<N> reg_;
-
-        // Constructing the direction muxes
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_direction_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(decrement_next_[I], increment_next_[I], direction_, direction_next_[I])...};
-        }
-
-        // Constructing the enable muxes
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_enable_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_[I], direction_next_[I], enable_, count_next_[I])...};
-        }
-
-        // Constructing the reset muxes
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_reset_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_next_[I], zero_wire_, reset_, reg_input_[I])...};
-        }
     };
 }

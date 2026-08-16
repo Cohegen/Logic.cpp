@@ -1,6 +1,6 @@
 #pragma once
 
-#include "signals/signal.hpp"
+#include "logic/signals/signal.hpp"
 
 namespace logic
 {

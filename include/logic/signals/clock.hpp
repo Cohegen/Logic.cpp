@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "signals/logicState.hpp"
+#include "logic/signals/logicState.hpp"
 
 namespace logic
 {

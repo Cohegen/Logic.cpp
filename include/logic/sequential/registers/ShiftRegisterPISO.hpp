@@ -48,13 +48,16 @@
 #include "sequential/flipflops/D_flip_flop.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
+#include "signals/bus.hpp"
+#include "signals/wire.hpp"
+#include "sequential/flipflops/D_flip_flop.hpp"
 #include "simulator/Component.hpp"
 
 namespace logic {
 
 template <std::size_t N>
-class ShiftRegisterPISO :public Component{
+class ShiftRegisterPISO : public Component {
     static_assert(
         N > 0,
         "Shift register must contain at least one flip-flop."
@@ -72,38 +75,22 @@ public:
           serial_in_(serial_in),
           serial_out_(serial_out),
           clock_(clock),
-          load_(load)
+          load_(load),
+          load_mux_(shift_bus_, parallel_in_, load_, d_in_bus_)
     {
-        muxes_.reserve(N);
         flip_flops_.reserve(N);
 
         if constexpr (N == 1) {
-            // Stage 0 (single stage)
-            // Mux selects between serial_in (shift, load=0) and parallel_in[0] (load, load=1)
-            muxes_.emplace_back(
-                serial_in_,
-                parallel_in_[0],
-                load_,
-                d_in_wires_[0]
-            );
-
             flip_flops_.emplace_back(
-                d_in_wires_[0],
+                d_in_bus_[0],
                 clock_,
                 serial_out_,
                 q_bar_wires_[0]
             );
         } else {
             // First stage (i = 0)
-            muxes_.emplace_back(
-                serial_in_,
-                parallel_in_[0],
-                load_,
-                d_in_wires_[0]
-            );
-
             flip_flops_.emplace_back(
-                d_in_wires_[0],
+                d_in_bus_[0],
                 clock_,
                 stage_wires_[0],
                 q_bar_wires_[0]
@@ -111,15 +98,8 @@ public:
 
             // Middle stages (0 < i < N-1)
             for (std::size_t i = 1; i < N - 1; ++i) {
-                muxes_.emplace_back(
-                    stage_wires_[i - 1],
-                    parallel_in_[i],
-                    load_,
-                    d_in_wires_[i]
-                );
-
                 flip_flops_.emplace_back(
-                    d_in_wires_[i],
+                    d_in_bus_[i],
                     clock_,
                     stage_wires_[i],
                     q_bar_wires_[i]
@@ -127,15 +107,8 @@ public:
             }
 
             // Final stage (i = N - 1)
-            muxes_.emplace_back(
-                stage_wires_[N - 2],
-                parallel_in_[N - 1],
-                load_,
-                d_in_wires_[N - 1]
-            );
-
             flip_flops_.emplace_back(
-                d_in_wires_[N - 1],
+                d_in_bus_[N - 1],
                 clock_,
                 serial_out_,
                 q_bar_wires_[N - 1]
@@ -143,12 +116,19 @@ public:
         }
     }
 
-    void evaluate() noexcept {
-        // First evaluate all MUX components to update data inputs to DFFs
-        for (auto& mux : muxes_) {
-            mux.evaluate();
+    void evaluate() noexcept override {
+        // Construct shift_bus_ inputs from serial_in and stage_wires
+        shift_bus_[0].write(serial_in_.read());
+        if constexpr (N > 1) {
+            for (std::size_t i = 1; i < N; ++i) {
+                shift_bus_[i].write(stage_wires_[i - 1].read());
+            }
         }
-        // Then evaluate all D flip-flops on clock transitions / state updates
+
+        // Evaluate bus multiplexer to update DFF data inputs
+        load_mux_.evaluate();
+
+        // Evaluate all D flip-flops
         for (auto& flip_flop : flip_flops_) {
             flip_flop.evaluate();
         }
@@ -162,13 +142,14 @@ private:
     Wire& clock_;
     Wire& load_; // 1 = Load parallel_in, 0 = Shift
 
-    // Internal connecting wires
-    std::array<Wire, N> d_in_wires_; // Outputs from MUXes to DFF inputs
-    std::array<Wire, (N > 1 ? N - 1 : 0)> stage_wires_; // Connections between stage DFF outputs and next stage MUX inputs
-    std::array<Wire, N> q_bar_wires_; // Inverted outputs of DFFs
+    // Internal connecting signals
+    Bus<N> shift_bus_;
+    Bus<N> d_in_bus_;
+    std::array<Wire, (N > 1 ? N - 1 : 0)> stage_wires_;
+    std::array<Wire, N> q_bar_wires_;
 
     // Hardware components
-    std::vector<Mux2to1> muxes_;
+    Mux<N> load_mux_;
     std::vector<DFlipFlop> flip_flops_;
 };
 

@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "signals/wire.hpp"
+#include "logic/signals/wire.hpp"
 
 namespace logic
 {

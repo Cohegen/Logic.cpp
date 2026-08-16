@@ -17,7 +17,7 @@
 #include "signals/logicState.hpp"
 #include "simulator/Component.hpp"
 #include "gates/NOT.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 
 namespace logic {
 
@@ -37,21 +37,11 @@ public:
         const std::vector<std::size_t>& initial_contents = {}
     ) : enable_(enable),
         address_(address),
-        read_data_(read_data)
+        read_data_(read_data),
+        read_mux_(selected_data_, zero_bus_, enable_inv_, read_data_)
     {
         contents_.fill(0);
         load_contents(initial_contents);
-
-        // Mux array for gating read_data output
-        read_muxes_.reserve(DataWidth);
-        for (std::size_t j = 0; j < DataWidth; ++j) {
-            read_muxes_.emplace_back(
-                selected_data_[j],
-                zero_wire_,
-                enable_inv_,
-                read_data_[j]
-            );
-        }
     }
 
     /// Load or overwrite ROM binary contents
@@ -79,8 +69,6 @@ public:
 
     void evaluate() noexcept override
     {
-        zero_wire_.write(LogicState::LOW);
-
         // Compute address index from address bus
         std::size_t addr_val = get_address_index();
 
@@ -90,11 +78,9 @@ public:
             selected_data_[j].write((val & (1ULL << j)) ? LogicState::HIGH : LogicState::LOW);
         }
 
-        // Enable gating
+        // Enable gating via bus-level Mux
         enable_not_.evaluate();
-        for (std::size_t j = 0; j < DataWidth; ++j) {
-            read_muxes_[j].evaluate();
-        }
+        read_mux_.evaluate();
     }
 
 private:
@@ -102,13 +88,13 @@ private:
     Bus<AddressWidth>& address_;
     Bus<DataWidth>& read_data_;
 
-    Wire zero_wire_{LogicState::LOW};
     Wire enable_inv_;
     NotGate enable_not_{enable_, enable_inv_};
 
+    Bus<DataWidth> zero_bus_;
     Bus<DataWidth> selected_data_;
     std::array<std::size_t, NumWords> contents_;
-    std::vector<Mux2to1> read_muxes_;
+    Mux<DataWidth> read_mux_;
 
     [[nodiscard]] std::size_t get_address_index() const noexcept
     {

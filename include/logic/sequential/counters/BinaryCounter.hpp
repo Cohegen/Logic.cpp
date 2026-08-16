@@ -10,7 +10,7 @@ An implementation of binary counter
 
 #include "simulator/Component.hpp"
 #include "combinational/adders/RippleCarryAdder.hpp"
-#include "combinational/multiplexers/Mux2to1.hpp"
+#include "combinational/multiplexers/Mux.hpp"
 #include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "sequential/registers/register.hpp"
@@ -33,8 +33,8 @@ namespace logic {
             count_(count),
             clock_wire_(clock.state()),
             r_adder_(count_, constant_one_, carry_in_, adder_next_, carry_out_),
-            enable_muxes_(make_enable_muxes(std::make_index_sequence<N>{})),
-            reset_muxes_(make_reset_muxes(std::make_index_sequence<N>{})),
+            enable_mux_(count_, adder_next_, enable_, count_next_),
+            reset_mux_(count_next_, zero_bus_, reset_, reg_input_),
             reg_(reg_input_, clock_wire_, count_)
         {
             // Set up constant 1 for adder input
@@ -54,16 +54,13 @@ namespace logic {
                 constant_one_[i].write(LogicState::LOW);
             }
             carry_in_.write(LogicState::LOW);
-            zero_wire_.write(LogicState::LOW);
 
             // Computing count + 1 using adder
             r_adder_.evaluate();
 
             // Passing outputs through enable and reset multiplexers
-            for (std::size_t i = 0; i < N; ++i) {
-                enable_muxes_[i].evaluate();
-                reset_muxes_[i].evaluate();
-            }
+            enable_mux_.evaluate();
+            reset_mux_.evaluate();
 
             // Clock update on register
             reg_.evaluate();
@@ -78,29 +75,17 @@ namespace logic {
         Wire clock_wire_;
         Wire carry_in_{LogicState::LOW};
         Wire carry_out_{LogicState::LOW};
-        Wire zero_wire_{LogicState::LOW};
 
         Bus<N> constant_one_;
+        Bus<N> zero_bus_;
         Bus<N> adder_next_;
         Bus<N> count_next_;
         Bus<N> reg_input_;
 
         RippleCarryAdder<N> r_adder_;
-        std::array<Mux2to1, N> enable_muxes_;
-        std::array<Mux2to1, N> reset_muxes_;
+        Mux<N> enable_mux_;
+        Mux<N> reset_mux_;
         Register<N> reg_;
-
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_enable_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_[I], adder_next_[I], enable_, count_next_[I])...};
-        }
-
-        template<std::size_t... I>
-        std::array<Mux2to1, N> make_reset_muxes(std::index_sequence<I...>)
-        {
-            return {Mux2to1(count_next_[I], zero_wire_, reset_, reg_input_[I])...};
-        }
     };
 }
 
