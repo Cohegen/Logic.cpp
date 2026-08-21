@@ -13,7 +13,7 @@ namespace logic {
         public: 
            BufferGate(Wire& input,Wire& output):m_input(input),m_output(output){}
 
-           void evaluate() override
+           void evaluate() noexcept override
            {
             m_output.write(m_input.read());
            }

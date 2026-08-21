@@ -17,7 +17,7 @@ public:
           m_mux1(c, d, select0, m_internal1),
           m_mux2(m_internal0, m_internal1, select1, output) {}
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         m_mux0.evaluate();
         m_mux1.evaluate();

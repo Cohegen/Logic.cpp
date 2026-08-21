@@ -58,7 +58,7 @@ public:
         build_zero_detector();
     }
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         low_.write(LogicState::LOW);
         add_carry_in_.write(LogicState::LOW);

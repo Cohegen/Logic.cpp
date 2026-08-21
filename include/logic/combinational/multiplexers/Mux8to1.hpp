@@ -80,7 +80,7 @@ public:
     {
     }
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         // Evaluating lower-level multiplexers first
         upper_mux.evaluate();
