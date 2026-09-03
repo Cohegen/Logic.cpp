@@ -12,9 +12,12 @@ A Multiplexer routes one of $2^S$ data input lines to a single output line based
 | Component | Input Lines | Select Lines | Output Lines |
 | :--- | :---: | :---: | :---: |
 | `Mux2to1` | 2 | 1 | 1 |
+| `Mux3to1` | 3 | 2 | 1 |
 | `Mux4to1` | 4 | 2 | 1 |
 | `Mux8to1` | 8 | 3 | 1 |
 | `Mux<N>` | 2 (buses of size N) | 1 | 1 (bus of size N) |
+| `Mux3<N>` | 3 (buses of size N) | 2 | 1 (bus of size N) |
+| `Mux4<N>` | 4 (buses of size N) | 2 | 1 (bus of size N) |
 
 #### Mux Boolean Equation (2:1)
 $$Y = (\bar{S} \cdot I_0) + (S \cdot I_1)$$

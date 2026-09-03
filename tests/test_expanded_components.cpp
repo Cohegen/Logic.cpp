@@ -14,6 +14,8 @@
 
 #include <logic/signals/BusDriver.hpp>
 #include <logic/combinational/multiplexers/Mux.hpp>
+#include <logic/combinational/multiplexers/Mux3.hpp>
+#include <logic/combinational/multiplexers/Mux3to1.hpp>
 
 #include <iostream>
 #include <cassert>
@@ -41,6 +43,59 @@ void test_bus_mux()
     assert(busOut.read_value() == 0xABCDEF01);
 
     std::cout << "[PASS] 32-bit Bus Mux Tests\n\n";
+}
+
+void test_mux3()
+{
+    std::cout << "--- Testing Mux3to1 and Mux3<32> ---\n";
+
+    logic::Wire a(logic::LogicState::LOW);
+    logic::Wire b(logic::LogicState::HIGH);
+    logic::Wire c(logic::LogicState::LOW);
+    logic::Wire select0(logic::LogicState::LOW);
+    logic::Wire select1(logic::LogicState::LOW);
+    logic::Wire bit_out;
+
+    logic::Mux3to1 mux3to1(a, b, c, select0, select1, bit_out);
+
+    c.write(logic::LogicState::HIGH);
+
+    select1.write(logic::LogicState::LOW);
+    select0.write(logic::LogicState::LOW);
+    mux3to1.evaluate();
+    assert(bit_out.read() == logic::LogicState::LOW);
+
+    select0.write(logic::LogicState::HIGH);
+    mux3to1.evaluate();
+    assert(bit_out.read() == logic::LogicState::HIGH);
+
+    select1.write(logic::LogicState::HIGH);
+    select0.write(logic::LogicState::LOW);
+    mux3to1.evaluate();
+    assert(bit_out.read() == logic::LogicState::HIGH);
+
+    logic::Bus<32> busA, busB, busC, busOut;
+    logic::Mux3<32> mux3(busA, busB, busC, select0, select1, busOut);
+
+    busA.write_value(0x11111111);
+    busB.write_value(0x22222222);
+    busC.write_value(0x33333333);
+
+    select1.write(logic::LogicState::LOW);
+    select0.write(logic::LogicState::LOW);
+    mux3.evaluate();
+    assert(busOut.read_value() == 0x11111111);
+
+    select0.write(logic::LogicState::HIGH);
+    mux3.evaluate();
+    assert(busOut.read_value() == 0x22222222);
+
+    select1.write(logic::LogicState::HIGH);
+    select0.write(logic::LogicState::LOW);
+    mux3.evaluate();
+    assert(busOut.read_value() == 0x33333333);
+
+    std::cout << "[PASS] Mux3 Tests\n\n";
 }
 
 void test_shifters()
@@ -204,6 +259,7 @@ int main()
     std::cout << "=======================================\n\n";
 
     test_bus_mux();
+    test_mux3();
     test_shifters();
     test_extenders();
     test_encoders();
