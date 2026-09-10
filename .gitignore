@@ -25,3 +25,12 @@ compile_commands.json
 *.suo
 Thumbs.db
 Desktop.ini
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyd
+*.egg-info/
+dist/
+build/
+

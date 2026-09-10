@@ -10,11 +10,11 @@ NAND gate is the inverse of AND gate
 
 namespace logic 
 {
-    class NandGate :public Component
+    class NandGate : public BinaryGate
     {
         public:
-            NandGate(Wire& a,Wire& b,Wire& out):
-                  BinaryGate(a,b,out){}
+            NandGate(Wire& a, Wire& b, Wire& out)
+                : BinaryGate(a, b, out) {}
 
             void evaluate() override
             {

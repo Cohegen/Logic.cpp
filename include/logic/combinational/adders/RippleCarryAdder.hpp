@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "combinational/adders/FullAdder.hpp"
+#include "signals/bus.hpp"
 #include "signals/wire.hpp"
 #include "simulator/Component.hpp"
 
