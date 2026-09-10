@@ -2,7 +2,7 @@ from typing import Union
 from ._pylogic_core import LogicState, NativeWire, NativeANDGate, NativeOrGate, NativeXorGate, NativeNotGate
 
 class Wire:
-    """A high-level ergonomic digital wire with operator overloading, inspired by PyTorch."""
+    """A high-level ergonomic digital wire with operator overloading, inspired by PyTorch"""
 
     def __init__(self, initial: Union[int, bool, LogicState, "Wire", None] = None, _native: NativeWire = None):
         if _native is not None:
