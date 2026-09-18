@@ -1,7 +1,6 @@
 /*
-    DualPortROM.hpp
 
-    Dual-read-port Read-Only Memory (ROM) component template.
+    Dual-read-port Read-Only Memory (ROM) component template
     Stores pre-loaded data in 2^AddressWidth words and exposes two
     independent combinational read ports gated by a shared enable signal.
 */
