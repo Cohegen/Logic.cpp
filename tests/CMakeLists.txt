@@ -31,6 +31,9 @@ target_link_libraries(test_ram PRIVATE logic::logic)
 add_executable(test_rom test_rom.cpp)
 target_link_libraries(test_rom PRIVATE logic::logic)
 
+add_executable(test_dual_port_rom test_dual_port_rom.cpp)
+target_link_libraries(test_dual_port_rom PRIVATE logic::logic)
+
 add_executable(test_register_file test_register_file.cpp)
 target_link_libraries(test_register_file PRIVATE logic::logic)
 

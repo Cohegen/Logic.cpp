@@ -15,6 +15,7 @@
 #include <logic/sequential/counters/RingCounter.hpp>
 #include <logic/sequential/memory/RAM.hpp>
 #include <logic/sequential/memory/ROM.hpp>
+#include <logic/sequential/memory/DualPortROM.hpp>
 #include <logic/sequential/memory/RegisterFile.hpp>
 #include <logic/sequential/memory/MemoryController.hpp>
 #include <logic/sequential/memory/Memory.hpp>
