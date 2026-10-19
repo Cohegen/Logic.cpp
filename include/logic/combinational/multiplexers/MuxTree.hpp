@@ -44,11 +44,11 @@ namespace detail
 } // namespace detail
 
 /**
- * @brief Multi-input Multiplexer Tree
- * 
- * @tparam NumInputs Number of input buses (must be a power of 2, >= 2)
- * @tparam DataWidth Bit-width of each bus
- * @tparam SelectBits Width of the select bus (defaults to ceil(log2(NumInputs)))
+ brief Multi-input Multiplexer Tree
+  
+ NumInputs Number of input buses (must be a power of 2, >= 2)
+ DataWidth Bit-width of each bus
+  SelectBits Width of the select bus (defaults to ceil(log2(NumInputs)))
  */
 template <
     std::size_t NumInputs,
