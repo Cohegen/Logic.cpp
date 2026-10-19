@@ -18,6 +18,7 @@
 #include <logic/combinational/multiplexers/Mux.hpp>
 #include <logic/combinational/multiplexers/Mux3.hpp>
 #include <logic/combinational/multiplexers/Mux3to1.hpp>
+#include <logic/combinational/multiplexers/MuxTree.hpp>
 
 #include <iostream>
 #include <cassert>
@@ -98,6 +99,54 @@ void test_mux3()
     assert(busOut.read_value() == 0x33333333);
 
     std::cout << "[PASS] Mux3 Tests\n\n";
+}
+
+void test_mux_tree()
+{
+    std::cout << "--- Testing MuxTree (4-to-1 and 32-to-1) ---\n";
+
+    // 4-to-1 MuxTree with 8-bit buses
+    std::array<logic::Bus<8>, 4> inputs4;
+    std::array<logic::Bus<8>*, 4> input_ptrs4;
+    for (std::size_t i = 0; i < 4; ++i)
+    {
+        inputs4[i].write_value(0x10 * (i + 1));
+        input_ptrs4[i] = &inputs4[i];
+    }
+    logic::Bus<2> sel4;
+    logic::Bus<8> out4;
+    logic::MuxTree<4, 8> mux_tree4(input_ptrs4, sel4, out4);
+
+    for (std::uint64_t i = 0; i < 4; ++i)
+    {
+        sel4.write_value(i);
+        mux_tree4.evaluate();
+        assert(out4.read_value() == 0x10 * (i + 1));
+    }
+
+    // 32-to-1 MuxTree with 128-bit buses (as used in VectorRegisterFile)
+    std::vector<std::unique_ptr<logic::Bus<128>>> inputs32;
+    std::vector<logic::Bus<128>*> input_ptrs32;
+    inputs32.reserve(32);
+    input_ptrs32.reserve(32);
+    for (std::size_t i = 0; i < 32; ++i)
+    {
+        inputs32.push_back(std::make_unique<logic::Bus<128>>());
+        inputs32.back()->write_value(0x1000 + i);
+        input_ptrs32.push_back(inputs32.back().get());
+    }
+    logic::Bus<5> sel32;
+    logic::Bus<128> out32;
+    logic::MuxTree<32, 128> mux_tree32(input_ptrs32, sel32, out32);
+
+    for (std::uint64_t i = 0; i < 32; ++i)
+    {
+        sel32.write_value(i);
+        mux_tree32.evaluate();
+        assert(out32.read_value() == (0x1000 + i));
+    }
+
+    std::cout << "[PASS] MuxTree Tests\n\n";
 }
 
 void test_shifters()
@@ -346,6 +395,7 @@ int main()
 
     test_bus_mux();
     test_mux3();
+    test_mux_tree();
     test_shifters();
     test_extenders();
     test_encoders();

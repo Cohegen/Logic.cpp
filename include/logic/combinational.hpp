@@ -15,6 +15,7 @@
 #include "combinational/multiplexers/Mux.hpp"
 #include "combinational/multiplexers/Mux3.hpp"
 #include "combinational/multiplexers/Mux4.hpp"
+#include "combinational/multiplexers/MuxTree.hpp"
 #include "combinational/decoders/Dec2to4.hpp"
 #include "combinational/decoders/Decoder.hpp"
 #include "combinational/decoders/Decoder2to4.hpp"
