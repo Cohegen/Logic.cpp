@@ -27,10 +27,10 @@ namespace logic
 {
 
 /**
- * @brief Templated Binary Line Decoder
- * 
- * @tparam InBits Number of address input bits
- * @tparam OutLines Number of output lines (defaults to 2^InBits)
+ Templated Binary Line Decoder
+  
+ InBits: Number of address input bits
+ OutLines:  Number of output lines (defaults to 2^InBits)
  */
 template <std::size_t InBits, std::size_t OutLines = (static_cast<std::size_t>(1) << InBits)>
 class Decoder : public Component
