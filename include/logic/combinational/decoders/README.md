@@ -11,8 +11,10 @@ Decodes an $N$-bit binary address into a 1-hot activated output array of $2^N$ l
 
 | Component | Input Address | Output Lines | Enable Wire |
 | :--- | :---: | :---: | :---: |
+| `Decoder<N, M>` | $N$ bits | $M$ lines (defaults to $2^N$) | Optional |
 | `Decoder2to4` | 2 bits | 4 lines | Optional |
 | `Decoder3to8` | 3 bits | 8 lines | Optional |
+| `Decoder4to16` | 4 bits | 16 lines | Optional |
 
 ---
 

@@ -8,6 +8,8 @@
 
 #include <logic/combinational/encoders/Encoder.hpp>
 #include <logic/combinational/encoders/PriorityEncoder.hpp>
+#include <logic/combinational/decoders/Decoder.hpp>
+#include <logic/combinational/decoders/Decoder2to4.hpp>
 
 #include <logic/combinational/bit_operations/BitSelector.hpp>
 #include <logic/combinational/bit_operations/BitSlice.hpp>
@@ -193,6 +195,90 @@ void test_encoders()
     std::cout << "[PASS] Encoder Tests\n\n";
 }
 
+void test_decoders()
+{
+    std::cout << "--- Testing Decoders (Decoder<N> & Decoder2to4) ---\n";
+
+    // 1. 2-to-4 Decoder with Enable Wire
+    logic::Bus<2> addr2;
+    logic::Wire enable(logic::LogicState::HIGH);
+    logic::Bus<4> out4;
+    logic::Decoder2to4 dec2to4(addr2, enable, out4);
+
+    for (std::uint64_t i = 0; i < 4; ++i)
+    {
+        addr2.write_value(i);
+        dec2to4.evaluate();
+        assert(out4.read_value() == (1ULL << i));
+        assert(out4[i].read() == logic::LogicState::HIGH);
+    }
+
+    // Disabled state
+    enable.write(logic::LogicState::LOW);
+    dec2to4.evaluate();
+    assert(out4.read_value() == 0);
+    for (std::size_t i = 0; i < 4; ++i)
+    {
+        assert(out4[i].read() == logic::LogicState::LOW);
+    }
+
+    // Unknown enable state
+    enable.write(logic::LogicState::UNKNOWN);
+    dec2to4.evaluate();
+    for (std::size_t i = 0; i < 4; ++i)
+    {
+        assert(out4[i].read() == logic::LogicState::UNKNOWN);
+    }
+
+    // 2. 3-to-8 Decoder without Enable Wire (always enabled)
+    logic::Bus<3> addr3;
+    logic::Bus<8> out8;
+    logic::Decoder<3> dec3to8(addr3, out8);
+
+    for (std::uint64_t i = 0; i < 8; ++i)
+    {
+        addr3.write_value(i);
+        dec3to8.evaluate();
+        assert(out8.read_value() == (1ULL << i));
+        assert(out8[i].read() == logic::LogicState::HIGH);
+    }
+
+    // 3. 4-to-16 Decoder (Decoder4to16 alias)
+    logic::Bus<4> addr4;
+    logic::Bus<16> out16;
+    logic::Decoder4to16 dec4to16(addr4, out16);
+
+    addr4.write_value(13);
+    dec4to16.evaluate();
+    assert(out16.read_value() == (1ULL << 13));
+    assert(out16[13].read() == logic::LogicState::HIGH);
+
+    // 4. Partial Decoder: 4-to-10 BCD Decoder
+    logic::Bus<4> bcd_in;
+    logic::Bus<10> bcd_out;
+    logic::Decoder<4, 10> bcd_dec(bcd_in, bcd_out);
+
+    bcd_in.write_value(9);
+    bcd_dec.evaluate();
+    assert(bcd_out.read_value() == (1ULL << 9));
+    assert(bcd_out[9].read() == logic::LogicState::HIGH);
+
+    // Out of range (12 >= 10) -> all outputs LOW
+    bcd_in.write_value(12);
+    bcd_dec.evaluate();
+    assert(bcd_out.read_value() == 0);
+
+    // 5. Unknown input address handling
+    bcd_in[0].write(logic::LogicState::UNKNOWN);
+    bcd_dec.evaluate();
+    for (std::size_t i = 0; i < 10; ++i)
+    {
+        assert(bcd_out[i].read() == logic::LogicState::UNKNOWN);
+    }
+
+    std::cout << "[PASS] Decoder Tests\n\n";
+}
+
 void test_bit_operations()
 {
     std::cout << "--- Testing BitSelector & BitSlice ---\n";
@@ -263,6 +349,7 @@ int main()
     test_shifters();
     test_extenders();
     test_encoders();
+    test_decoders();
     test_bit_operations();
     test_bus_driver();
 

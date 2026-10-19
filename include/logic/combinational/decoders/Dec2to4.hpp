@@ -57,7 +57,7 @@ public:
     {
     }
 
-    void evaluate()
+    void evaluate() noexcept override
     {
         // Generate inverted signals
         m_notGateA.evaluate();
