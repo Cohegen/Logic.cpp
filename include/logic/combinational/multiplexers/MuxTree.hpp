@@ -43,8 +43,8 @@ namespace detail
     }
 } // namespace detail
 
-/**
- brief Multi-input Multiplexer Tree
+/*
+ Multi-input Multiplexer Tree
   
  NumInputs Number of input buses (must be a power of 2, >= 2)
  DataWidth Bit-width of each bus
